@@ -1,0 +1,36 @@
+# sbt
+target/
+project/target/
+project/project/target/
+project/project/
+project/metals.sbt
+lib_managed/
+src_managed/
+project/boot/
+
+# BSP / Metals / Bloop
+.bsp/
+.bloop/
+.metals/
+.metals.bak/
+
+# sbt / Scala misc
+.scala_dependencies
+.scala-build
+.cache
+.cache-main
+.history
+
+# build artifacts
+*.class
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# editors (keep .vscode/ if you commit workspace settings)
+.idea/
+*.iml
+*.swp
+*~

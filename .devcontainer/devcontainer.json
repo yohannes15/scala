@@ -1,0 +1,22 @@
+{
+  "name": "Scala (sbt + Metals)",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "scalameta.metals"
+      ],
+      "settings": {
+        "files.watcherExclude": {
+          "**/target/**": true
+        }
+      }
+    }
+  },
+  "forwardPorts": [8080],
+  "postCreateCommand": "java -version && sbt sbtVersion",
+  "remoteUser": "sbtuser"
+}
