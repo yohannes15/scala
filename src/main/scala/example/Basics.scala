@@ -15,7 +15,10 @@ def hello(name: String): Unit =
   // whileLoop()
 
   ///// DomainModeling.scala ////////
-  exampleTraitClasses()
+  // exampleTraitClasses()
+  sumTypeExample()
+  println(sumTypeExample2(Sunny))
+  productType()
 
 
 def helloInteractive() =
