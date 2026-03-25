@@ -15,10 +15,17 @@ def hello(name: String): Unit =
   // whileLoop()
 
   ///// DomainModeling.scala ////////
+
   // exampleTraitClasses()
-  sumTypeExample()
-  println(sumTypeExample2(Sunny))
-  productType()
+  // sumTypeExample()
+  // println(sumTypeExample2(Sunny))
+  // productType()
+
+  /////// Methods ///////
+  testExtension()
+
+  /////// First Class Functions ////////
+  higherOrderFunc()
 
 
 def helloInteractive() =
