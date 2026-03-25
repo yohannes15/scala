@@ -8,7 +8,7 @@
 
 ---
 
-## Why this order (transferability)
+## Why this order? (transferability)
 
 | Learn first | Learn second | Why |
 |-------------|--------------|-----|

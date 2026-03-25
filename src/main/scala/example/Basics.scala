@@ -22,11 +22,19 @@ def hello(name: String): Unit =
   // productType()
 
   /////// Methods ///////
-  testExtension()
+  // testExtension()
 
   /////// First Class Functions ////////
-  higherOrderFunc()
+  // higherOrderFunc()
 
+  /////// Singleton /////////
+  // singeltonExample()
+  // println(companionExample())
+  // modulesFromTraits()
+
+  ////// Collections ///////
+  // foldReduceDemo()
+  tupleExample()
 
 def helloInteractive() =
   println("Please enter your name")
@@ -102,6 +110,8 @@ def helloInteractive() =
     s"$f with length ${f.length}"
   
   print(fruitsLengths) // List(apple with length 5, banana with length 6, orange with length 6)
+  
+  
 
 /////////////////////////////////////////////////////
 //////////////////// Match //..//////////////////////
