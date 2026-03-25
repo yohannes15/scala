@@ -37,7 +37,11 @@ def hello(name: String): Unit =
   // tupleExample()
 
   ////// Types ////////////
-  instancesOfAnyExample()
+  // instancesOfAnyExample()
+
+  ///// String Interpolation ///////
+  // customInterpolatorExample()
+  patternMatchingCustomExtractorExample()
 
 def helloInteractive() =
   println("Please enter your name")

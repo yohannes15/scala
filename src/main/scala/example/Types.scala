@@ -65,8 +65,8 @@ def typeCastExample(): Unit =
     val face: Char = '☺'
     val number: Int = face  // 9786
 
-    // Explict cast example
+    // Explict cast example and error
 
-    val x: Long = 987654321
-    val y: Float = x.toFloat  // 9.8765434E8 (note that `.toFloat` is required because the cast results in precision loss)
-    val z: Long = y // error
+    // val x: Long = 987654321
+    // val y: Float = x.toFloat  // 9.8765434E8 (note that `.toFloat` is required because the cast results in precision loss)
+    // val z: Long = y // error
