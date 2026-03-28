@@ -145,4 +145,19 @@ def matchExpressionsExamples(): Unit =
         case c if 20 to 50 contains c => println(s"20-50 range: $c")
         case _ => println("Hmmm I don't think I have your range")
 
+    /* 
+    You can also extract fields from case classes - and classes that have properly written
+    apply / unapply methods and use those in your guard conditions. 
+     */
+
+    speak(Persona("Fred"))
+    speak(Persona("Bam Bam"))
+
+def speak(p: Persona): Unit = p match
+    case Persona(name) if name == "Fred" => println(s"$name says, Yubb dybba doo")
+    case Persona(name) if name == "Bam Bam" => println(s"$name says, Bam bam!")
+    case _ => println("Watch the Flintstones!")
+
+    
+
     
