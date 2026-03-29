@@ -49,7 +49,14 @@ def hello(name: String): Unit =
   ///// Control Strucutres //////////
   // forExpressions()
   // between3and10(List(1, 3, 7, 11))
-  matchExpressionsExamples()
+  // matchExpressionsExamples()
+  // tryCatch()
+  // repeat(3) {
+  //   println("Repeating this 3 times")
+  // }
+  // repeat(1)(println("Repeatng this 1 time"))
+   firstIndex(List(1, 2, 3, 4, 5), 3) // 2
+   firstIndex(List(1, 2, 3, 4, 5), 99) // -1
 
 
 
