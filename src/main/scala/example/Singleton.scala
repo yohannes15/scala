@@ -21,8 +21,23 @@ object StringUtils:
     def isNullOrEmpty(s: String): Boolean = s == null || s.trim().isEmpty()
     def leftTrim(s: String): String = s.replaceAll("^\\s+", "")
     def rightTrim(s: String): String = s.replaceAll("\\s+$", "")
+    /**
+     * Returns true if the given string contains any whitespace
+     * at all. Assumes that `s` is not null.
+    */
     def containsWhitespace(s: String): Boolean = s.matches(".*\\s.*")
+    /**
+     * Returns a string that is the same as the input string, but
+     * truncated to the specified length.
+    */
     def truncate(s: String, length: Int): String = s.take(length)
+    /**
+    * Returns true if the string contains only letters and numbers.
+    */
+    def lettersAndNumbersOnly_?(s: String): Boolean =
+        s.matches("[a-zA-Z0-9]+")
+
+end StringUtils
 
 // Importing in Scala is very flexible, and allows us to import all members of an object:
 import StringUtils.*

@@ -30,10 +30,11 @@ def hello(name: String): Unit =
   // sensorReaderExample()
 
   ////// FpModeling.scala ///////
-  fpModelingExample()
+  // fpModelingExample()
 
   /////// Methods ///////
   // testExtension()
+  methodVisibility()
 
   /////// First Class Functions ////////
   // higherOrderFunc()
