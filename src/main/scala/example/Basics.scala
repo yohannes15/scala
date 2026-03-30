@@ -27,7 +27,10 @@ def hello(name: String): Unit =
 
   ////// OOPModeling.scala ////////
   // mixinCompositionExample()
-  sensorReaderExample()
+  // sensorReaderExample()
+
+  ////// FpModeling.scala ///////
+  fpModelingExample()
 
   /////// Methods ///////
   // testExtension()

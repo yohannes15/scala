@@ -263,7 +263,7 @@ def caseObjectExamplehandleMessages(message: Message): Unit = message match
 
 // Sum type enumerates all the possible instances of a type; used when data can be represented with d/f choices
 // XOR or exclusive OR relationship
-// E.g pizza has three main attribues: Crust Size, Crust Type, Toppings
+// E.g pizza has three main attribues: Crust Size, Crust Type
 // They are concisely modeled with enumerations, which are sum types that only contain singleton values
 
 enum CrustSize:
@@ -271,9 +271,6 @@ enum CrustSize:
 
 enum CrustType:
   case Thin, Thick, Regular
-
-enum Topping:
-  case Cheese, Pepperoni, BlackOlives, GreenOlives, Onions
 
 import CrustSize.*
 
