@@ -271,14 +271,236 @@ The following function takes no input parameters and returns nothing, so it matc
 def helloJoe(): Unit = println("Hello, Joe")
 def bonjourJulien(): Unit = println("Bonjour, Julien")
 
+
 def hofExample() =
     // sayHello cantake any function that matches f’s signature
     sayHello(helloJoe)   // prints "Hello, Joe"
     sayHello(bonjourJulien) // prints "Bonjour, Julien"
-
 /*
 -------------------------------------------------------------------
 General syntax for defining function input parameters in HOFs
 --------------------------------------------------------------------
+Because functional programming is like creating and combining a series of algebraic equations, 
+it’s common to think about types a lot when designing functions and applications. 
+You might say that you “think in types.”
+
+    `variableName: (parameterTypes ...) => returnType`
+
+To demonstrate more type signature examples, heres a function that takes
+a String parameter and returns an Int
+
+    `f: String => Int`
+
+Examples: stringLength, checkSum are examples
+
+    `f: (Int, Int) => Int`
+
+Examples: any function that takes two input ints and retuns an int
+    1. def add(a: Int, b: Int): Int = a + b
+    2. def subtract(a: Int, b: Int): Int = a - b
+    3. def multiply(a: Int, b: Int): Int = a * b
+
+-------------------------------------------------------------------
+Taking a function parameter along with other parameters
+-------------------------------------------------------------------
+
+For HOFs to be really useful, they also need some data to work on. For a class like List, 
+its map method already has data to work on: the data in the List. But for a standalone HOF
+that doesn’t have its own data, it should also accept data as other input parameters.
+
+For instance, here’s a method named executeNTimes that has two input parameters: a function, and an Int:
 
 */
+
+def executeNTimes(f: () => Unit, n: Int): Unit = 
+    for i <- 1 to n do f()
+
+// To test executeNTimes, define a method that matches f’s signature:
+
+def helloWorld(): Unit = println("Hello World!")
+
+def hofExample2() =
+    // executeNTimes method executes the helloWorld function three times.
+    executeNTimes(helloWorld, 3)
+
+/* 
+Your methods can continue to get as complicated as necessary. 
+For example, this method takes a function of type (Int, Int) => Int, along with two input parameters:
+
+Because the sum and multiply methods match that type signature, 
+they can be passed into executeAndPrint along with two Int values:
+ */
+
+def executeAndPrint(f: (Int, Int) => Int, i: Int, j: Int): Unit = 
+    println(f(i, j))
+
+def sum(x: Int, y: Int) = x + y
+def multiply(x: Int, y: Int) = x * y
+
+
+def hofExample3() =
+    // executeNTimes method executes the helloWorld function three times.
+    executeAndPrint(sum, 3, 11) // prints 14
+    executeAndPrint(multiply, 3, 9) // prints 27
+
+/* 
+
+A great thing about learning about Scala’s function type signatures is that the syntax you use
+to define function input parameters is the same syntax you use to write function literals.
+
+    type signature: (Int, Int) => Int
+    input parameters: (a, b)
+    body: a + b
+*/
+
+//  function that calculates the sum of two integers. You can see the type matches f in executeAndPrint
+val f: (Int, Int) => Int = (a, b) => a + b
+
+
+/************************************************************
+ ************************************************************
+ Writing your own map method
+ ---------------------------
+ Imagine for a moment that the List class doesn’t have its own map method.
+ A good first step when creating functions is to accurately state the problem
+ Focusing only on a List[Int], you state
+
+    => I want to write a `map` method that can be used to apply a function to 
+       each element in a List[Int] that it’s given, returning the transformed 
+       elements as a new list.
+
+Steps:
+
+1. First you know that you want to accept a function as a parameter and that function
+that should transform an Int into some type A, so you write
+
+    `def map(f: (Int) => A)`
+
+2. The syntax for using a type parameter requires declaring it in square brackets [] 
+before the parameter list, so you add that:
+    
+    `def map[A](f: (Int) => A)`
+
+3. Next you know map should accept a List[Int]
+
+    `def map[A](f: (Int) => A, xs: List[Int])`
+
+4. You also know that map returns a transformed List that contains elements of the type A
+
+    `def map[A](f: (Int) => A, xs: List[Int]): List[A] = ???`
+
+5. Apply body. Method applies the function its given to every element in the list
+   to produce a new, transformed list
+    
+    def map[A](f: (Int) => A, xs: List[Int]): List[A] = 
+        for x <- xs yield f(x)
+        
+6. As a bonus, notice for expression doesn't do anything that depends on the type inside
+   the `List` being `Int`. So you can replace `Int` in the type signaute with the type B
+
+    def map[A, B](f: (B) => A, xs: List[B]): List[A] =
+        for x <- xs yield f(x)
+***********************************************************
+************************************************************/
+
+def map[A, B](f: (B) => A, xs: List[B]): List[A] =
+  for x <- xs yield f(x)
+
+// Now you have a map method that works with any List.
+
+// These methods match the type f accepts
+def double(i : Int): Int = i * 2
+def strlen(s: String): Int = s.length
+
+def customMapMethodExample() = 
+    println(map(double, List(1,2,3)))             // List(2, 4, 6)
+    println(map(strlen,List("a", "bb", "ccc")))   // List(1, 2, 3)
+
+
+/************************************************************
+ ************************************************************
+ Creating a Method That Returns a Function
+ -----------------------------------------------------------
+
+writing a method that returns a function is similar to everything you’ve seen
+For example, imagine that you want to write a greet method that returns a function. 
+
+Once again we start with a problem statement:
+
+    `I want to create a greet method that returns a function. That function will take
+     a string parameter and print it using println. To simplify this first example, 
+     greet won’t take any input parameters; it will just build a function and return it.`
+    
+Steps:
+
+1. It is a method
+
+    `def greet()`
+
+2. It will return a function that (a) takes a String parameter and (b) prints string
+
+    `def greet(): String => Unit = ???`
+
+3. Now you just need a body method
+
+     def greet(): String => Unit = 
+        (name: String) => println(s"Hello, $name")
+
+4. We can also pass in a greeting to make it more useful
+
+    def greet(theGreeting: String): String => Unit =
+        (name: String) => println(s"$theGreeting, $name")
+
+*************************************************************
+*************************************************************/
+
+def greet(theGreeting: String): String => Unit =
+    (name: String) => println(s"$theGreeting, $name")
+
+val sayHello2: String => Unit = greet("Hello") // Type is String => Unit
+val sayCiao = greet("Ciao")
+val sayHola = greet("Hola")
+
+def methodReturningFuncExample() = 
+    sayHello2("Joe")       // prints Hello, Joe
+    sayCiao("Isabella")    // prints "Ciao, Isabella"
+    sayHola("Carlos")      // prints "Hola, Carlos"
+
+
+/* 
+A More Real-World Example
+---------------------------------------------------------
+Very useful when your method returns one of many possible functions, like a factory that
+returns custom-built functions.
+
+Imagine you want to write a method that returns functions that greet people in different
+languages, limited to English or French, depending on a parameter thats passed into method
+
+Steps
+
+1. You want to create a method 
+    (a) takes a "desired languaged" as an input 
+    (b) returns a function as its result
+
+2. B/c that function prints a string that its given, you know it has type String => Unit
+
+3. Next, because you know that the possible functions you’ll return take a string and print it, 
+   you can write two anonymous functions for the English and French languages:
+
+* Notice that returning a function from a method is no different than returning a string or integer value.
+ */
+
+
+def createGreetingFunction(desiredLanguage: String): String => Unit =
+    val englishGreeting = (name: String) => println(s"Hello, $name")
+    val frenchGreeting = (name: String) => println(s"Bonjour, $name")
+
+    desiredLanguage match
+        case "english" => englishGreeting
+        case "french" => frenchGreeting
+
+def methodReturningFuncExample2() = 
+    val greetInFrench = createGreetingFunction("french")
+    greetInFrench("Jonathan")   // prints "Bonjour, Jonathan"
+    val greetInEnglish = createGreetingFunction("english")
+    greetInEnglish("Joe")   // prints "Hello, Joe"

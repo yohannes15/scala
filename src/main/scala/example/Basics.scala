@@ -43,7 +43,12 @@ def hello(name: String): Unit =
   // anonymousExample()
   // functionVariableExample()
   // partialFunctionExample()
-  hofExample()
+  // hofExample()
+  // hofExample2()
+  // hofExample3()
+  // customMapMethodExample()
+  // methodReturningFuncExample()
+  methodReturningFuncExample2()
 
   /////// First Class Functions ////////
   // higherOrderFunc()
@@ -79,23 +84,19 @@ def hello(name: String): Unit =
   //  firstIndex(List(1, 2, 3, 4, 5), 3) // 2
   //  firstIndex(List(1, 2, 3, 4, 5), 99) // -1
 
-
-
 def helloInteractive() =
   println("Please enter your name")
   // Learning Interactive Input
   val name = readLine()
   // Control Structures (if then else if then else)
-  if name.length > 4 then
-    println("You have a long name")
-  else
-    println("You have a short name")
+  if name.length > 4 then println("You have a long name")
+  else println("You have a short name")
   // String interpolation
   println(s"Hello, $name!")
 
   ////////////////////////////////////////////////
   //////////////////// Map //////////////////////
-  /////////////////////////////////////////////// 
+  ///////////////////////////////////////////////
   val allowedChoices = Map(
     "m" -> "Male",
     "f" -> "Female",
@@ -106,9 +107,7 @@ def helloInteractive() =
 
   if allowedChoices.contains(gender) then
     println(s"Thanks saving $name as gender ${allowedChoices(gender)}")
-  else
-    println(s"Invalid choice. Re run program")
-    
+  else println(s"Invalid choice. Re run program")
 
   /////////////////////////////////////////////////////
   //////////////////// For Loops //////////////////////
@@ -118,23 +117,21 @@ def helloInteractive() =
     i <- ints
     // guarding allowed
     if i > 2
-  do
-    println(i)
+  do println(i)
 
   for
-    // You can use multiple generators and guards. 
-    // This loop iterates over the numbers 1 to 3, and for each number it also iterates over 
-    // the characters a to c. However, it also has two guards, so the only time the print 
+    // You can use multiple generators and guards.
+    // This loop iterates over the numbers 1 to 3, and for each number it also iterates over
+    // the characters a to c. However, it also has two guards, so the only time the print
     // statement is called is when i has the value 2 and j is the character b:
     i <- 1 to 3
     j <- 'a' to 'c'
     if i == 2
     if j == 'b'
-  do
-    println(s"i = $i, j = $j")
+  do println(s"i = $i, j = $j")
 
   // yield
-  // When you use the yield keyword instead of do, you create for expressions 
+  // When you use the yield keyword instead of do, you create for expressions
   // which are used to calculate and yield results.
 
   val doubles = for i <- ints yield i * 2
@@ -148,15 +145,14 @@ def helloInteractive() =
   println(capNames) // List("Chris", "Ed", "Mark")
 
   val fruits = List("apple", "banana", "lime", "orange")
-  val fruitsLengths = for 
+  val fruitsLengths = for
     f <- fruits
     if f.length > 4
-  yield
-    s"$f with length ${f.length}"
-  
-  print(fruitsLengths) // List(apple with length 5, banana with length 6, orange with length 6)
-  
-  
+  yield s"$f with length ${f.length}"
+
+  print(
+    fruitsLengths
+  ) // List(apple with length 5, banana with length 6, orange with length 6)
 
 /////////////////////////////////////////////////////
 //////////////////// Match //..//////////////////////
@@ -179,7 +175,7 @@ def matching() =
     case _ => "other"
 
   // match can used on any data type
-  // case class Person(name: String) is a small data holder that gives you a constructor, fields, equality, toString, 
+  // case class Person(name: String) is a small data holder that gives you a constructor, fields, equality, toString,
   // and built‑in pattern matching support, so you can focus on the data shape instead of boilerplate.
   case class Person(name: String)
 
@@ -195,19 +191,19 @@ def matching() =
     case Person(name) if name == "Bam Bam" =>
       println(s"$name says, Bam bam!")
 
-    case _ => println("Watch the Flintstones!")  // fallback: any other value
+    case _ => println("Watch the Flintstones!") // fallback: any other value
 
   // can be used to test a variable against many different types of patterns
   // Matchable is a type that can be matched against/ supports pattern matching
-  def getClassAsString(x: Matchable): String = 
+  def getClassAsString(x: Matchable): String =
     x match
-      case s: String => s"String: $s"
-      case i: Int => s"Int: $i"
-      case d: Double => s"Double: $d"
-      case b: Boolean => s"Boolean: $b"
-      case l: List[?] => s"List: $l"
+      case s: String    => s"String: $s"
+      case i: Int       => s"Int: $i"
+      case d: Double    => s"Double: $d"
+      case b: Boolean   => s"Boolean: $b"
+      case l: List[?]   => s"List: $l"
       case m: Map[?, ?] => s"Map: $m"
-      case _ => "Unknown"
+      case _            => "Unknown"
 
   println(getClassAsString("Hello")) // String: Hello
   println(getClassAsString(123)) // Int: 123
@@ -215,11 +211,10 @@ def matching() =
   println(getClassAsString(true)) // Boolean: true
   println(getClassAsString(List(1, 2, 3))) // List: List(1, 2, 3)
   println(getClassAsString(Map("a" -> 1, "b" -> 2))) // Map: Map(a -> 1, b -> 2)
-    
-  // There’s much more to pattern matching in Scala. Patterns can be nested, results of patterns can be bound, 
-  // and pattern matching can even be user-defined. 
-  // See the pattern matching examples in the https://docs.scala-lang.org/scala3/book/control-structures.html
 
+  // There’s much more to pattern matching in Scala. Patterns can be nested, results of patterns can be bound,
+  // and pattern matching can even be user-defined.
+  // See the pattern matching examples in the https://docs.scala-lang.org/scala3/book/control-structures.html
 
 /////////////////////////////////////////////////////////////////
 //////////////////// Try/Catch/Finally //..//////////////////////
@@ -227,20 +222,19 @@ def matching() =
 def tryCatchFinally() =
   println("Type 'io' or 'nfe' to throw an exception otherwise no error thrown")
   val text = readLine()
-  
-  def writeTextToFile(text: String): Unit = 
+
+  def writeTextToFile(text: String): Unit =
     text match
-      case "io" => throw new IOException("IO Exception thrown")
-      case "nfe" => throw new NumberFormatException("NumberFormat Exception thrown")
+      case "io"  => throw new IOException("IO Exception thrown")
+      case "nfe" =>
+        throw new NumberFormatException("NumberFormat Exception thrown")
       case _ => println("File written successfully!")
 
-  try
-    writeTextToFile(text)
+  try writeTextToFile(text)
   catch
-    case ioe: IOException => println("Got an IOException")
+    case ioe: IOException           => println("Got an IOException")
     case nfe: NumberFormatException => println("Got a NumberFormatException")
-  finally
-    println("Clean up your resources here")
+  finally println("Clean up your resources here")
 
 ///////////////////////////////////////////////////////////
 //////////////////// While Loops //..//////////////////////
@@ -251,8 +245,7 @@ def whileLoop() =
   println("While loop from [1, 3)")
   var x = 1
 
-  while
-    x < 3
+  while x < 3
   do
     println(x)
     x += 1
