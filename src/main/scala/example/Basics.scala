@@ -10,7 +10,16 @@ import example.collections.{
   arrayBufferExample,
   mapExample,
   setExample,
-  rangeExample
+  rangeExample,
+  collectionMethodsExample,
+  collectionMethodsMapExample,
+  collectionMethodsFilterExample,
+  collectionMethodsforeachExample,
+  collectionMethodsheadExample,
+  collectionMethodstailExample,
+  collectionMethodstakeExample,
+  collectionMethodsdropExample,
+  collectionMethodsreduceExample
 }
 
 @main
@@ -81,7 +90,19 @@ def hello(name: String): Unit =
   // arrayBufferExample()
   // mapExample()
   // setExample()
-  rangeExample()
+  // rangeExample()
+
+  //// CollectionMethods //////
+  // collectionMethodsExample()
+  // collectionMethodsMapExample()
+  // collectionMethodsFilterExample()
+  // collectionMethodsforeachExample()
+  // collectionMethodsheadExample()
+  // collectionMethodstailExample()
+  // collectionMethodstakeExample()
+  // collectionMethodsdropExample()
+  collectionMethodsreduceExample()
+
 
   ////// Types ////////////
   // instancesOfAnyExample()
