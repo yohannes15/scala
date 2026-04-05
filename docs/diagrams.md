@@ -1,7 +1,5 @@
 # Static diagrams (SVG)
 
-These files live under `src/main/scala/learning/static/`. GitHub and most Markdown viewers render SVG images when linked with relative paths from the repo root.
-
 ## Type system
 
 | File | Topic |
