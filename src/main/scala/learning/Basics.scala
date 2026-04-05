@@ -1,7 +1,11 @@
 package learning
 
 /* Tutorial entrypoint: `hello` lists the modules in study order — see `docs/LEARNING_PATH.md`
- * and `docs/diagrams.md` for SVGs. */
+ * and `docs/diagrams.md` for SVGs.
+ *
+ * Run from the project root (quote the whole sbt command so `runMain` is parsed correctly):
+ *   sbt "runMain learning.hello Scala"
+ */
 
 import scala.io.StdIn.readLine
 import java.io.IOException
