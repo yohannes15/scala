@@ -115,6 +115,8 @@ case class Dog(name: String) extends Animal:
   def bark: String = "Bark"
 
 def matchExpressionsExamples(): Unit =
+  import example.collections.Persona
+
   val i = 42
   i match
     case 0    => println("1")
