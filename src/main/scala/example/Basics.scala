@@ -101,7 +101,7 @@ def hello(name: String): Unit =
   // collectionMethodstailExample()
   // collectionMethodstakeExample()
   // collectionMethodsdropExample()
-  collectionMethodsreduceExample()
+  // collectionMethodsreduceExample()
 
   ////// Types ////////////
   // instancesOfAnyExample()
@@ -125,6 +125,13 @@ def hello(name: String): Unit =
 
   //// Packages /////////
   // importGivenExample()
+
+  ////// Functional Programming //////
+  // immutableValuesExample()
+  // pureFunctionsExample()
+  // optionExample()
+  // optionToReplaceNullExample()
+  // trySuccessFailureExample()
 
 def helloInteractive() =
   println("Please enter your name")
