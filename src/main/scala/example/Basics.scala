@@ -2,6 +2,16 @@ package example
 
 import scala.io.StdIn.readLine
 import java.io.IOException
+import example.collections.{
+  lazyListExample,
+  listCollection,
+  vectorExample,
+  arrayExample,
+  arrayBufferExample,
+  mapExample,
+  setExample,
+  rangeExample
+}
 
 @main
 def hello(name: String): Unit =
@@ -60,9 +70,18 @@ def hello(name: String): Unit =
   // modulesFromTraits()
 
   ////// Collections ///////
-
+  // listCollection()
+  // lazyListExample()
   // foldReduceDemo()
   // tupleExample()
+
+  //// CollectionTypes //////
+  // vectorExample()
+  // arrayExample()
+  // arrayBufferExample()
+  // mapExample()
+  // setExample()
+  rangeExample()
 
   ////// Types ////////////
   // instancesOfAnyExample()
@@ -85,7 +104,7 @@ def hello(name: String): Unit =
   //  firstIndex(List(1, 2, 3, 4, 5), 99) // -1
 
   //// Packages /////////
-  importGivenExample()
+  // importGivenExample()
 
 def helloInteractive() =
   println("Please enter your name")
