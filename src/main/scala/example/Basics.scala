@@ -48,7 +48,7 @@ def hello(name: String): Unit =
   // hofExample3()
   // customMapMethodExample()
   // methodReturningFuncExample()
-  methodReturningFuncExample2()
+  // methodReturningFuncExample2()
 
   /////// First Class Functions ////////
   // higherOrderFunc()
@@ -83,6 +83,9 @@ def hello(name: String): Unit =
   // repeat(1)(println("Repeatng this 1 time"))
   //  firstIndex(List(1, 2, 3, 4, 5), 3) // 2
   //  firstIndex(List(1, 2, 3, 4, 5), 99) // -1
+
+  //// Packages /////////
+  importGivenExample()
 
 def helloInteractive() =
   println("Please enter your name")
