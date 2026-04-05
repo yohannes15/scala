@@ -414,4 +414,23 @@ Concrete Mutable Collection Classes
     - (https://docs.scala-lang.org/overviews/collections-2.13/concrete-mutable-collection-classes.html)
 How are the collections structured? Which one should I choose? 
     - (https://docs.scala-lang.org/tutorials/FAQ/index.html)
+
+When you need to see more details about the collections types shown in this chapter, 
+see their Scaladoc pages:
+
+    List - https://www.scala-lang.org/api/current/scala/collection/immutable/List.html
+    Vector - https://www.scala-lang.org/api/current/scala/collection/immutable/Vector.html
+    ArrayBuffer - https://www.scala-lang.org/api/current/scala/collection/mutable/ArrayBuffer.html
+    Range - https://www.scala-lang.org/api/current/scala/collection/immutable/Range.html
+
+Also mentioned are the immutable Map and Set:
+
+    Map - https://www.scala-lang.org/api/current/scala/collection/immutable/Map.html
+    Set - https://www.scala-lang.org/api/current/scala/collection/immutable/Set.html
+
+and the mutable Map and Set:
+
+    Map - https://www.scala-lang.org/api/current/scala/collection/mutable/Map.html
+    Set - https://www.scala-lang.org/api/current/scala/collection/mutable/Set.html
+
 ************************************************************************/
