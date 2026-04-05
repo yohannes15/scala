@@ -103,7 +103,6 @@ def hello(name: String): Unit =
   // collectionMethodsdropExample()
   collectionMethodsreduceExample()
 
-
   ////// Types ////////////
   // instancesOfAnyExample()
 
