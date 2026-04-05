@@ -134,7 +134,7 @@ def hello(name: String): Unit =
   // pureFunctionsExample()
   // optionExample()
   // optionToReplaceNullExample()
-  // trySuccessFailureExample()
+  trySuccessFailureExample()
 
 def helloInteractive() =
   println("Please enter your name")
