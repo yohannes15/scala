@@ -145,7 +145,8 @@ def hello(name: String): Unit =
   // intersectionTypesExample()
   // unionTypeExample()
   // optionAsEnumExample()
-  enumExampleMore()
+  // enumExampleMore()
+  gadtExample()
 
 def helloInteractive() =
   println("Please enter your name")

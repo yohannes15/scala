@@ -324,3 +324,212 @@ def enumExampleMore() =
     println(natToInt(three))    // 3
     println(listHead(nums))     // Some(1)
     println(listHead(empty))    // None
+
+/*******************************************************************
+*******************************************************************
+Generalized Algebraic Datatypes (GADTs)
+
+Above notation for enums is very concise and serves as perfect starting
+point for modeling your types. Since we can always be more explicit,
+it is also possible to express types that are much more powerful. (GADTs)
+
+GADTs — deeper explanation
+-------------------------------------------------------------------
+A regular ADT (like Option[T]) has a type parameter T that is left
+open — the caller decides what T is, and all cases share that same T.
+
+A GADT goes further: each case can FIX T to a specific concrete type
+via an explicit `extends` clause. The compiler tracks which T belongs
+to which case and uses that knowledge inside pattern match branches.
+
+This is called "type refinement": when you match on a GADT case, the
+compiler narrows the type parameter to what that case declared.
+
+Plain ADT vs GADT:
+
+    // ADT — type params A and B are chosen by the caller, not pinned per-case
+    enum Pair[A, B]:
+        case Both(a: A, b: B)   // A and B remain whatever the caller passes in
+
+    // GADT — each case pins T independently
+    enum Expr[T]:
+        case Num(n: Int)      extends Expr[Int]
+        case Bool(b: Boolean) extends Expr[Boolean]
+        case Add(l: Expr[Int], r: Expr[Int]) extends Expr[Int]
+        case IfThenElse(cond: Expr[Boolean],
+                        thenB: Expr[T],
+                        elseB: Expr[T]) extends Expr[T]
+
+The Expr[T] GADT models a tiny typed expression language:
+  - Num and Bool are literals whose type is fixed by the constructor
+  - Add only accepts Int expressions, and always produces an Int
+  - IfThenElse requires a Boolean condition, and its two branches
+    must agree on type T (which flows through to the result)
+
+Because T is pinned per-case, the compiler can type-check the
+evaluate function below WITHOUT any runtime casts. Each match arm
+refines T and the return type is verified statically.
+
+plain ADT — T stays the same throughout; 
+GADT — each case can narrow T to something more specific.
+********************************************************************
+*******************************************************************/
+
+// Example of GADT where T parameter specifies contents stored in box
+
+enum Box[T](contents: T):
+    case IntBox(n: Int) extends Box[Int](n)
+    case BoolBox(b: Boolean) extends Box[Boolean](b)
+    case StringBox(s: String) extends Box[String](s)
+
+// The GADT refines T in each branch: T = Int, Boolean, String respectively.
+// The compiler can verify each arm returns the correct T without any casting.
+def extract[T](b: Box[T]): T = 
+    import Box.*
+    // only safe to return an Int in the first case, since we 
+    // know from pattern matching that the input was an IntBox.
+    // Pattern matching on the particular constructor (IntBox or BoolBox) recovers the type information
+    b match
+        case IntBox(n)    => n + 1   // T refined to Int:     return the Int
+        case BoolBox(b)   => !b   // T refined to Boolean: return the Boolean
+        case StringBox(s) => StringBuilder(s"Happy birthday, $s").toString   // T refined to String:  return the String
+
+enum Expr[T]:
+    case Num(n: Int) extends Expr[Int]
+    case Bool(b: Boolean) extends Expr[Boolean]
+    // Add requires both operands to be Expr[Int] and produces Expr[Int]
+    case Add(l: Expr[Int], r: Expr[Int]) extends Expr[Int]
+    // IfThenElse: condition must be Boolean; branches must agree on T
+    case IfThenElse(
+        cond: Expr[Boolean],
+        thenB: Expr[T],
+        elseB: Expr[T]
+    ) extends Expr[T]
+
+// evaluate reduces an Expr[T] to a plain Scala value of type T.
+// No casting needed: inside each arm, T is refined to a concrete type
+// so the compiler can verify the return type is correct.
+def evaluate[T](expr: Expr[T]): T =
+    import Expr.*
+    expr match
+        case Num(n)                    => n           // T refined to Int
+        case Bool(b)                   => b           // T refined to Boolean
+        case Add(l, r)                 => evaluate(l) + evaluate(r)   // both Int
+        case IfThenElse(cond, t, e)    => if evaluate(cond) then evaluate(t) else evaluate(e)
+
+def gadtExample() =
+    println(extract(Box.IntBox(42)))        // 43
+    println(extract(Box.BoolBox(true)))     // false
+    println(extract(Box.StringBox("Mike"))) // Happy birthday, Mike
+    
+    import Expr.*
+    // 1 + 2 → 3
+    val sum = Add(Num(1), Num(2))
+    println(evaluate(sum))                         // 3
+
+    // if true then 10 else 20 → 10
+    val branch = IfThenElse(Bool(true), Num(10), Num(20))
+    println(evaluate(branch))                      // 10
+
+    // if (1 + 2 == 3) then "yes" else "no"
+    // Note: this would NOT compile if the condition were Expr[Int]
+    // — the GADT enforces that IfThenElse.cond must be Expr[Boolean]
+    val strBranch = IfThenElse(Bool(false), Bool(true), Bool(false))
+    println(evaluate(strBranch))                   // false
+
+    // The compiler prevents nonsense like Add(Bool(true), Num(1))
+    // — Add requires Expr[Int] on both sides, Bool gives Expr[Boolean]
+    // Add(Bool(true), Num(1))  // ← does not compile
+
+/*******************************************************************
+*******************************************************************
+Desugaring Enumerations
+-------------------------------------------------------------------
+Every `enum` is syntactic sugar. The compiler expands it into:
+
+  1. A `sealed abstract class` extending `scala.reflect.Enum`
+     (which requires each case to implement `def ordinal: Int`)
+  2. A companion `object` containing the expanded cases
+
+Enum cases fall into three categories
+(see https://docs.scala-lang.org/scala3/reference/enums/desugarEnums.html):
+
+  SIMPLE CASE    — name only, no params, no extends clause
+                   e.g.  case North
+                   desugars to: val North = $new(n, "North")
+                   ($new is a private factory that creates the singleton)
+
+  VALUE CASE     — has an explicit `extends` clause (and/or body)
+                   but no parameter section
+                   e.g.  case Red extends ADTColor(0xFF0000)
+                   desugars to: val Red = new ADTColor(...) { def ordinal = n }
+
+  CLASS CASE     — has a parameter section (may also have extends)
+                   e.g.  case Mix(mix: Int) extends ADTColor(mix)
+                   desugars to: final case class Mix(...) extends ADTColor(mix) {
+                                    def ordinal = n }
+
+Singleton cases (simple + value) are expanded to `val` definitions.
+Class cases are expanded to `final case class` definitions.
+
+Using `enum` is preferred over manual encoding because the compiler
+also generates `values`, `valueOf`, and `fromOrdinal` utilities for free.
+*******************************************************************
+*******************************************************************/
+
+// --- Rule 1: enum expands to a sealed abstract class + companion object ---
+sealed abstract class ADTColor2(val rgb: Int) extends scala.reflect.Enum
+
+object ADTColor2:
+    // VALUE CASES — simplified form as shown in the Scala 3 book.
+    // The book uses `case object` for readability. The actual compiler output
+    // per the spec is: val Red = new ADTColor2(0xFF0000) { def ordinal = 0 }
+    // Both represent the same idea: a named singleton with a fixed ordinal.
+    case object Red   extends ADTColor2(0xFF0000) { def ordinal = 0 }
+    case object Green extends ADTColor2(0x00FF00) { def ordinal = 1 }
+    case object Blue  extends ADTColor2(0x0000FF) { def ordinal = 2 }
+
+    // CLASS CASE — has a parameter section, so it's not a singleton.
+    // Actual compiler output: final case class Mix(mix: Int) extends ADTColor2(mix) {
+    //                             def ordinal = 3 }
+    // Each call to Mix(...) creates a new instance; ordinal is always 3.
+    final case class Mix(mix: Int) extends ADTColor2(mix) { def ordinal = 3 }
+
+    // `fromOrdinal` is generated automatically by the compiler for real enums.
+    // Shown here manually to illustrate what it does: map ordinal → case.
+    // Note: Mix is excluded because it is a class case (not a singleton),
+    // so there is no single instance to return for ordinal 3.
+    def fromOrdinal(ordinal: Int): ADTColor2 = ordinal match
+        case 0 => Red
+        case 1 => Green
+        case 2 => Blue
+        case _ => throw new NoSuchElementException(ordinal.toString)
+
+// --- SIMPLE CASE example (the third category) ---
+// A simple case has no params and no extends clause; only valid on non-generic enums.
+// The compiler generates: val North = $new(0, "North")
+// $new is a private factory that builds a singleton implementing ordinal + toString.
+enum Direction:
+    case North, South, East, West   // all four are simple cases
+
+def desugarExample() =
+    // value cases — ordinal reflects declaration order
+    println(ADTColor2.Red.ordinal)    // 0
+    println(ADTColor2.Green.ordinal)  // 1
+    println(ADTColor2.Blue.ordinal)   // 2
+
+    // class case — a fresh instance each time, ordinal always 3
+    val m1 = ADTColor2.Mix(0xFF0000)
+    val m2 = ADTColor2.Mix(0x00FF00)
+    println(m1.ordinal)               // 3
+    println(m2.ordinal)               // 3
+    println(m1 == m2)                 // false — different instances
+
+    // fromOrdinal — manual version shown above
+    println(ADTColor2.fromOrdinal(0)) // Red
+
+    // simple cases — compiler-generated valueOf and values available
+    println(Direction.North)          // North
+    println(Direction.valueOf("East")) // East  (generated by compiler)
+    println(Direction.values.mkString(", ")) // North, South, East, West
+
