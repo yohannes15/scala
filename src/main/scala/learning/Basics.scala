@@ -49,7 +49,7 @@ def hello(name: String): Unit =
   // println(sumTypeExample2(Sunny))
   // productType()
   // auxiliaryClassConstructor()
-  // enumExample()
+  enumExample()
 
   ////// domain/OopModeling.scala ////////
   // mixinCompositionExample()
@@ -141,9 +141,9 @@ def hello(name: String): Unit =
   // trySuccessFailureExample()
 
   ////// Types //////////////
-  genericsExample()
-  intersectionTypesExample()
-  unionTypeExample()
+  // genericsExample()
+  // intersectionTypesExample()
+  // unionTypeExample()
 
 def helloInteractive() =
   println("Please enter your name")

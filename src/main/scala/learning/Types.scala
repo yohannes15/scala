@@ -201,3 +201,11 @@ but not the least supertype, Password | Username */
 
 val bc: Email | Username = if true then name else email
 // If you want the least supertype you have to give it explicitly, as is done for bc.
+
+/************************************************************
+*************************************************************
+Algebraic Data Types - Part 2 
+
+
+************************************************************
+************************************************************/
