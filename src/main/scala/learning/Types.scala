@@ -79,7 +79,7 @@ trait Growable[A]:
 
 trait Both[A] extends Resettable, Growable[A]
 
-def f(x: Resettable & Growable[String]): Unit =
+def goodf(x: Resettable & Growable[String]): Unit =
     x.reset()
     x.add("first")
 
@@ -122,8 +122,8 @@ def intersectionTypesExample(): Unit =
     val fromNominal = NominalBoth()
     val fromStructural = StructuralOnly()
 
-    f(fromNominal)
-    f(fromStructural)
+    goodf(fromNominal)
+    goodf(fromStructural)
     println(s"after f: $fromNominal, $fromStructural")
 
     badf(fromNominal)
@@ -194,10 +194,10 @@ is explicilty given. For instance given these values:
 val name = Username("Eve")
 val email = Email("eve@email.com")
 
-val a = if true then name else email
+val ac = if true then name else email
 /*
-The type of a is Object, which is a supertype of Username and Password, 
+The type of ac is Object, which is a supertype of Username and Password, 
 but not the least supertype, Password | Username */
 
-val b: Email | Username = if true then name else email
-// If you want the least supertype you have to give it explicitly, as is done for b.
+val bc: Email | Username = if true then name else email
+// If you want the least supertype you have to give it explicitly, as is done for bc.
