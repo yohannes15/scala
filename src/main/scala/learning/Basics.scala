@@ -110,7 +110,7 @@ def hello(name: String): Unit =
   // collectionMethodsdropExample()
   // collectionMethodsreduceExample()
 
-  ////// Types ////////////
+  ////// TypesHiearchy ////////////
   // instancesOfAnyExample()
 
   ///// String Interpolation ///////
@@ -138,7 +138,12 @@ def hello(name: String): Unit =
   // pureFunctionsExample()
   // optionExample()
   // optionToReplaceNullExample()
-  trySuccessFailureExample()
+  // trySuccessFailureExample()
+
+  ////// Types //////////////
+  genericsExample()
+  intersectionTypesExample()
+  unionTypeExample()
 
 def helloInteractive() =
   println("Please enter your name")
