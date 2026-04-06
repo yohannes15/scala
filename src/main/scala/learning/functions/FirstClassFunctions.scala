@@ -1,4 +1,4 @@
-package learning
+package learning.functions
 
 // Scala has most features expected in a FP language including:
 // Lambdas (anonymous functions)
