@@ -36,7 +36,9 @@ import learning.types.{
   intersectionTypesExample,
   unionTypeExample,
   optionAsEnumExample,
-  gadtExample
+  gadtExample,
+  invariantPipelineExample,
+  covariantExample
 }
 import learning.functions.{
   anonymousExample,
@@ -58,117 +60,119 @@ def hello(name: String): Unit =
 
   /// Basics.scala ////////
 
-  helloInteractive()
-  matching()
-  tryCatchFinally()
-  whileLoop()
+  // helloInteractive()
+  // matching()
+  // tryCatchFinally()
+  // whileLoop()
 
-  /// domain/DomainModeling.scala ////////
+  // /// domain/DomainModeling.scala ////////
 
-  exampleTraitClasses()
-  sumTypeExample()
-  caseClassExample()
-  caseObjectExamplehandleMessages(PlaySong("Rehab"))
-  println(sumTypeExample2(Sunny))
-  productType()
-  auxiliaryClassConstructor()
-  enumExample()
+  // exampleTraitClasses()
+  // sumTypeExample()
+  // caseClassExample()
+  // caseObjectExamplehandleMessages(PlaySong("Rehab"))
+  // println(sumTypeExample2(Sunny))
+  // productType()
+  // auxiliaryClassConstructor()
+  // enumExample()
 
-  //// domain/OopModeling.scala ////////
-  mixinCompositionExample()
-  sensorReaderExample()
+  // //// domain/OopModeling.scala ////////
+  // mixinCompositionExample()
+  // sensorReaderExample()
 
-  //// domain/FpModeling.scala ///////
-  fpModelingExample()
+  // //// domain/FpModeling.scala ///////
+  // fpModelingExample()
 
-  ///// Methods ///////
-  testExtension()
-  methodVisibility()
+  // ///// Methods ///////
+  // testExtension()
+  // methodVisibility()
 
-  // Main Methods /////
-  testMainMethods()
+  // // Main Methods /////
+  // testMainMethods()
 
-  // Functions /////
-  anonymousExample()
-  functionVariableExample()
-  partialFunctionExample()
-  hofExample()
-  hofExample2()
-  hofExample3()
-  customMapMethodExample()
-  methodReturningFuncExample()
-  methodReturningFuncExample2()
+  // // Functions /////
+  // anonymousExample()
+  // functionVariableExample()
+  // partialFunctionExample()
+  // hofExample()
+  // hofExample2()
+  // hofExample3()
+  // customMapMethodExample()
+  // methodReturningFuncExample()
+  // methodReturningFuncExample2()
 
-  ///// First Class Functions ////////
-  higherOrderFunc()
+  // ///// First Class Functions ////////
+  // higherOrderFunc()
 
-  ///// Singleton /////////
+  // ///// Singleton /////////
 
-  singeltonExample()
-  companionExample()
-  modulesFromTraits()
+  // singeltonExample()
+  // companionExample()
+  // modulesFromTraits()
 
-  //// Collections ///////
-  listCollection()
-  lazyListExample()
-  foldReduceDemo()
-  tupleExample()
+  // //// Collections ///////
+  // listCollection()
+  // lazyListExample()
+  // foldReduceDemo()
+  // tupleExample()
 
-  // CollectionTypes //////
-  vectorExample()
-  arrayExample()
-  arrayBufferExample()
-  mapExample()
-  setExample()
-  rangeExample()
+  // // CollectionTypes //////
+  // vectorExample()
+  // arrayExample()
+  // arrayBufferExample()
+  // mapExample()
+  // setExample()
+  // rangeExample()
 
-  // CollectionMethods //////
-  collectionMethodsExample()
-  collectionMethodsMapExample()
-  collectionMethodsFilterExample()
-  collectionMethodsforeachExample()
-  collectionMethodsheadExample()
-  collectionMethodstailExample()
-  collectionMethodstakeExample()
-  collectionMethodsdropExample()
-  collectionMethodsreduceExample()
+  // // CollectionMethods //////
+  // collectionMethodsExample()
+  // collectionMethodsMapExample()
+  // collectionMethodsFilterExample()
+  // collectionMethodsforeachExample()
+  // collectionMethodsheadExample()
+  // collectionMethodstailExample()
+  // collectionMethodstakeExample()
+  // collectionMethodsdropExample()
+  // collectionMethodsreduceExample()
 
-  //// TypesHiearchy ////////////
-  instancesOfAnyExample()
+  // //// TypesHiearchy ////////////
+  // instancesOfAnyExample()
 
-  /// String Interpolation ///////
+  // /// String Interpolation ///////
 
-  customInterpolatorExample()
-  patternMatchingCustomExtractorExample()
+  // customInterpolatorExample()
+  // patternMatchingCustomExtractorExample()
 
-  /// Control Strucutres //////////
-  forExpressions()
-  between3and10(List(1, 3, 7, 11))
-  matchExpressionsExamples()
-  tryCatch()
-  repeat(3) {
-    println("Repeating this 3 times")
-  }
-  repeat(1)(println("Repeatng this 1 time"))
-   firstIndex(List(1, 2, 3, 4, 5), 3) // 2
-   firstIndex(List(1, 2, 3, 4, 5), 99) // -1
+  // /// Control Strucutres //////////
+  // forExpressions()
+  // between3and10(List(1, 3, 7, 11))
+  // matchExpressionsExamples()
+  // tryCatch()
+  // repeat(3) {
+  //   println("Repeating this 3 times")
+  // }
+  // repeat(1)(println("Repeatng this 1 time"))
+  //  firstIndex(List(1, 2, 3, 4, 5), 3) // 2
+  //  firstIndex(List(1, 2, 3, 4, 5), 99) // -1
 
-  // Packages /////////
-  importGivenExample()
+  // // Packages /////////
+  // importGivenExample()
 
-  //// Functional Programming //////
-  immutableValuesExample()
-  pureFunctionsExample()
-  optionExample()
-  optionToReplaceNullExample()
-  trySuccessFailureExample()
+  // //// Functional Programming //////
+  // immutableValuesExample()
+  // pureFunctionsExample()
+  // optionExample()
+  // optionToReplaceNullExample()
+  // trySuccessFailureExample()
 
-  ////// Types //////////////
-  genericsExample()
-  intersectionTypesExample()
-  unionTypeExample()
-  optionAsEnumExample()
-  gadtExample()
+  // ////// Types //////////////
+  // genericsExample()
+  // intersectionTypesExample()
+  // unionTypeExample()
+  // optionAsEnumExample()
+  // gadtExample()
+  // invariantPipelineExample()
+  covariantExample()
 
 def helloInteractive() =
   println("Please enter your name")
