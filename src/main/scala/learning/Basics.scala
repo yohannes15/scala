@@ -39,7 +39,10 @@ import learning.types.{
   gadtExample,
   invariantPipelineExample,
   covariantExample,
-  contravariantExample
+  contravariantExample,
+  opaqueTypescala2abstractionOverhead,
+  leakyAbstractionscala2Example,
+  opaqueTypeExample
 }
 import learning.functions.{
   anonymousExample,
@@ -174,7 +177,10 @@ def hello(name: String): Unit =
   // gadtExample()
   // invariantPipelineExample()
   // covariantExample()
-  contravariantExample()
+  // contravariantExample()
+  // opaqueTypescala2abstractionOverhead()
+  // leakyAbstractionscala2Example()
+  opaqueTypeExample()
 
 def helloInteractive() =
   println("Please enter your name")
