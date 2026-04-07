@@ -38,7 +38,8 @@ import learning.types.{
   optionAsEnumExample,
   gadtExample,
   invariantPipelineExample,
-  covariantExample
+  covariantExample,
+  contravariantExample
 }
 import learning.functions.{
   anonymousExample,
@@ -172,7 +173,8 @@ def hello(name: String): Unit =
   // optionAsEnumExample()
   // gadtExample()
   // invariantPipelineExample()
-  covariantExample()
+  // covariantExample()
+  contravariantExample()
 
 def helloInteractive() =
   println("Please enter your name")
