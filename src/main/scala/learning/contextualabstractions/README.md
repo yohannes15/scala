@@ -110,3 +110,26 @@ Scala's approach has influenced many languages:
 Contextual abstractions are also central to theorem provers like **Coq** and **Agda**,
 where the compiler synthesises proof terms from their types.
 ---
+
+## Contextual Abstractions Summary
+-------------------------------------------------------
+This chapter provided an introduction to most Contextual Abstractions topics, including:
+
+- Extension Methods
+- Given Instances and Using Clauses
+- Context Bounds
+- Given Imports
+- Type Classes
+- Multiversal Equality
+- Implicit Conversions
+
+These features are all variants of the core idea of term **term inference**: given a type, the compiler synthesizes a “canonical” term that has that type.
+
+A few more advanced topics aren’t covered here, including:
+- Conditional Given Instances
+- Type Class Derivation
+- Context Functions
+- By-Name Context Parameters
+- Relationship with Scala 2 Implicits
+
+Those topics are discussed in detail in the [Contextual Abstractions Reference Documentation](https://docs.scala-lang.org/scala3/reference/contextual/index.html)

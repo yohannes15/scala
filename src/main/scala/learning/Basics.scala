@@ -68,7 +68,8 @@ import learning.contextualabstractions.{
   defaultComparsionExample,
   derivedCanEqualExample,
   wontCompileComparisonExample,
-  realWorldExample
+  realWorldExample,
+  implictConversionExample
 }
 
 @main
@@ -206,7 +207,8 @@ def hello(name: String): Unit =
   // defaultComparsionExample()
   // wontCompileComparisonExample()
   // derivedCanEqualExample()
-  realWorldExample()
+  // realWorldExample()
+  implictConversionExample()
 
 
 def helloInteractive() =
