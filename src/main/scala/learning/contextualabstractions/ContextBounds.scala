@@ -113,3 +113,22 @@ def contextBoundsExample() =
   println(maxElementUgly(ints))   // 10 — named, explicit forwarding
   println(maxElementBetter(ints)) // 10 — anonymous using
   println(maxElement(ints))       // 10 — context bound shorthand
+
+/* 
+Typing Shorthands / Shortcuts (SUPERNOTE)
+
+[A]                     // plain type parameter — unconstrained
+[A: Ord]                // context bound — shorthand for (using Ord[A])
+[A <: Animal]           // upper bound — A must be a subtype of Animal
+[A >: Dog]              // lower bound — A must be a supertype of Dog
+[+A]                    // covariant
+[-A]                    // contravariant
+// can also combine them
+[A <: Animal: Ord]      // A must be a subtype of Animal AND have an Ord[A] in context
+
+
+The way to read [A: Ord] out loud is:
+  "A, with a context bound of Ord"
+which the compiler rewrites to:
+  "A, with an implicit using Ord[A] parameter"
+*/
