@@ -63,7 +63,8 @@ import learning.contextualabstractions.{
   tediousParametersExample,
   contextualParametersExample,
   givenInstancesExample,
-  contextBoundsExample
+  contextBoundsExample,
+  typeClassExample
 }
 
 @main
@@ -194,10 +195,11 @@ def hello(name: String): Unit =
 
   //////// ContextualAbstractions
   // extensionExample()
-  tediousParametersExample()
-  contextualParametersExample()
-  givenInstancesExample()
-  contextBoundsExample()
+  // tediousParametersExample()
+  // contextualParametersExample()
+  // givenInstancesExample()
+  // contextBoundsExample()
+  typeClassExample()
 
 def helloInteractive() =
   println("Please enter your name")
