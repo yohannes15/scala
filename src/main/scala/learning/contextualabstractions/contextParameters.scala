@@ -100,11 +100,39 @@ val config = Config(8080, "docs.scala-lang.org")
 // this is the type that we want to provide the canonical value for
 // this is the value the Scala compiler will infer
 // as argument to contextual parameters of type Config
-given Config = config            
 
-def givenInstancesExample() = 
-    val res = renderWebsite("/home") // no need to provide explicity now its "given"
+// `given` syntax has three forms — all tell the compiler the same thing:
+// "use this as the canonical value whenever this type is required from context"
+//
+// IMPORTANT: you can only have ONE implicit given per type in scope at a time.
+// Having two givens for the same type causes an "ambiguous given instances" error
+// because the compiler doesn't know which one to pick automatically.
+// When you need multiple, always pass them explicitly with `using`.
+
+// Form 1 — anonymous, points at an existing value.
+// Used when `config` already exists and you don't need to name the given itself.
+// This is the one the compiler picks up automatically for renderWebsite("/home").
+given Config = config
+
+// Form 2 — named, points at an existing value.
+// Cannot coexist with Form 1 for the same type in the same scope —
+// shown here commented out to illustrate the syntax only.
+// given namedConfig: Config = config
+
+// Form 3 — named, with a different value (e.g. a staging config).
+// Also cannot coexist with Form 1 automatically — must be passed explicitly.
+// given stagingConfig: Config = Config(9090, "staging.scala-lang.org")
+
+def givenInstancesExample() =
+    // compiler resolves `given Config` automatically — no need to pass explicitly
+    val res = renderWebsite("/home")
     println(res)
+
+    // to use a different Config, pass it explicitly with `using`
+    // this overrides the ambient given for just this one call
+    val stagingConfig = Config(9090, "staging.scala-lang.org")
+    val res2 = renderWebsite("/about")(using stagingConfig)
+    println(res2)
 
 
 
