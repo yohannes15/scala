@@ -85,10 +85,7 @@ With Scala 3 you start by enabling multiversal equality as shown
 in the previous example:
 */
 
-// [1] add this import, or this command line flag: -language:strictEquality
-import scala.language.strictEquality
-
-// [2] create your class hierarchy / domain objects
+// [1] create your class hierarchy / domain objects
 trait Book:
     def author: String
     def title: String
@@ -120,11 +117,13 @@ case class AudioBook(author: String, title: String, year: Int, lengthInMinutes: 
         case _ =>
             false
 
-def realWorldExample() = 
+// [3] create type class instances to define the allowed comparisons
+given CanEqual[PrintedBook, PrintedBook] = CanEqual.derived // allow `PrintedBook == PrintedBook`
+given CanEqual[AudioBook, AudioBook] = CanEqual.derived     // allow `AudioBook == AudioBook`
 
-    // [3] create type class instances to define the allowed comparisons
-    given CanEqual[PrintedBook, PrintedBook] = CanEqual.derived // allow `PrintedBook == PrintedBook`
-    given CanEqual[AudioBook, AudioBook] = CanEqual.derived     // allow `AudioBook == AudioBook`
+def realWorldExample() = 
+    // [3] add this import, or this command line flag: -language:strictEquality
+    import scala.language.strictEquality
 
     // [4a] Comparing two printed books works as desired
     val p1 = PrintedBook("1984", "George Orwell", 1961, 328)
@@ -152,8 +151,8 @@ def realWorldExample() =
     given CanEqual[AudioBook, PrintedBook] = CanEqual.derived
 
     // Now you can compare physical books to audiobooks without a compiler error:
-    println(aBook == pBook)   // true (works because of `equals` in `AudioBook`)
-    println(pBook == aBook)   // true (works because of `equals` in `PrintedBook`)
+    println(s"$aBook and $pBook are equal: ${aBook == pBook}") // true (works because of `equals` in `AudioBook`)
+    println(s"$pBook and $aBook are equal: ${pBook == aBook}") // true (works because of `equals` in `PrintedBook`)
     
     /* 
     Implement “equals” to make them really work
