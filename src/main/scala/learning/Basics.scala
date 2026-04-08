@@ -64,7 +64,10 @@ import learning.contextualabstractions.{
   contextualParametersExample,
   givenInstancesExample,
   contextBoundsExample,
-  typeClassExample
+  typeClassExample,
+  defaultComparsionExample,
+  derivedCanEqualExample,
+  wontCompileComparisonExample
 }
 
 @main
@@ -199,7 +202,10 @@ def hello(name: String): Unit =
   // contextualParametersExample()
   // givenInstancesExample()
   // contextBoundsExample()
-  typeClassExample()
+  // defaultComparsionExample()
+  // wontCompileComparisonExample()
+  derivedCanEqualExample()
+
 
 def helloInteractive() =
   println("Please enter your name")
