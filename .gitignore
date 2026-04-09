@@ -30,7 +30,6 @@ project/boot/
 Thumbs.db
 
 # editors — do not commit local debug config; other `.vscode/*` can still be tracked
-.vscode/launch.json
 .idea/
 *.iml
 *.swp
