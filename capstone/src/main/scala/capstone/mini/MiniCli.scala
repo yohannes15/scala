@@ -3,7 +3,7 @@ package capstone.mini
 /** Capstone 1 — **credit band** CLI: parse **credit score** + **income**, validate, then
   *  **`Approved`** or **`Declined`** with reasons (thresholds on score and income — see
   *  [[CreditInfo]]). [[InvalidInput]] / [[Either]] for bad input; full write-up in repo
-  *  `capstone/README.md` §1.
+  *  `capstone/README.md`.
   *
   *  Run from the **repo root** (`scala-tutorial` project — `capstone/` sources are compiled in):
   *

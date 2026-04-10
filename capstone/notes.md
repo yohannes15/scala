@@ -1,6 +1,6 @@
 # Capstone notes — `MiniCli` (credit band)
 
-Scratch notes for **Capstone 1 §1**: fake credit decision CLI — parse score + income, **`Either`**, regex `split`, empty-line edge case. See **`capstone/README.md`** for the full project description.
+Scratch notes for **Capstone 1**: fake credit decision CLI — parse score + income, **`Either`**, regex `split`, empty-line edge case. See **`capstone/README.md`** for the full project description.
 
 ## Input parsing
 
