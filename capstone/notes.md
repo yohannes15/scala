@@ -20,3 +20,27 @@
 - After `trim`, an empty line is `""`.
 - `"".split("[,\\s]+")` yields **`Array("")`**: length **1**, not 0 — one **empty** token. That is why a generic “wrong number of fields” message felt wrong for “user typed nothing.”
 - Handle **`line.isEmpty`** before `split` if you want a clear “no input” error.
+
+## Smart constructor (FP-friendly, not exercise answers)
+
+- Keep **`CreditInfo`** as **plain data** (fields); put **range / domain** checks in the **companion object** as something like **`from(...): Either[InvalidInput, CreditInfo]`** so invalid combos never need to exist as bare `CreditInfo` values.
+- Optional: **`private`** constructor on the `case class` so only the companion can call the real constructor after checks (see Scala 3 Book / docs on **private case class constructors**).
+- **You** wire `for` / `flatMap` to call **`CreditInfo.from(cs, in)`** instead of **`CreditInfo(cs, in)`** once parsing has produced raw numbers.
+
+## `private case class` vs `case class … private (…)`
+
+| | `private case class A(…)` | `case class B private (…)` |
+| --- | --- | --- |
+| **Hides** | The **type** `A` outside the enclosing scope | **Construction** (`apply` / ctor) from outside the allowed region |
+| **Typical use** | Whole type is an implementation detail | Public type, creation only via companion / factory |
+
+```scala
+object Outer {
+  private case class Secret(n: Int) // name Secret not visible outside Outer
+}
+
+case class Credit private (cs: Int, income: Int) // Credit is public; Credit(1, 2) may be illegal outside companion
+object Credit { def trusted(cs: Int, income: Int): Credit = new Credit(cs, income) }
+```
+
+Syntax: **`private case class`** (class hidden) vs **`case class Name private (...)`** — `private` **after** the name, before `(`.
