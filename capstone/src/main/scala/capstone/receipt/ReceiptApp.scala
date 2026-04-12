@@ -66,7 +66,7 @@ case class Receipt(description: String, taxCode: TaxCode, price: BigDecimal):
   *
   * Pass the sample ''filename'' only (e.g. `receipt-good.txt`); resolved under
   * `capstone/samples/`. Run from repo root:
-  * `sbt "runMain capstone.receipt.ReceiptApp receipt-good.txt"`
+  * `sbt "capstone/runMain capstone.receipt.ReceiptApp receipt-good.txt"`
   */
 @main def ReceiptApp(textFile: String): Unit =
   println("================== ReceiptApp =================")

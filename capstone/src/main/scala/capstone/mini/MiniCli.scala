@@ -5,10 +5,10 @@ package capstone.mini
   *  [[CreditInfo]]). [[InvalidInput]] / [[Either]] for bad input; full write-up in repo
   *  `capstone/README.md`.
   *
-  *  Run from the **repo root** (`scala-tutorial` project — `capstone/` sources are compiled in):
+  *  Run from the **repo root** (`capstone` subproject):
   *
-  *    - Interactive: `sbt "runMain capstone.mini.MiniCli"`
-  *    - One string arg: `sbt 'runMain capstone.mini.MiniCli "500 10000"'`
+  *    - Interactive: `sbt "capstone/runMain capstone.mini.MiniCli"`
+  *    - One string arg: `sbt 'capstone/runMain capstone.mini.MiniCli "500 10000"'`
   */
 sealed trait AppError
 case class InvalidInput(msg: String) extends AppError

@@ -137,14 +137,14 @@ Main roadmap: **[README.md](../README.md)** → **Phase B — Cats → Cats Effe
 
 ### Done when
 
-From the **repo root**, `sbt "runMain capstone.receipt.ReceiptApp receipt-good.txt"` and the same with **`receipt-bad.txt`** work (files live in [`samples/`](samples/); pass **basename only**).
+From the **repo root**, `sbt "capstone/runMain capstone.receipt.ReceiptApp receipt-good.txt"` and the same with **`receipt-bad.txt`** work (files live in [`samples/`](samples/); pass **basename only**).
 
 ### Sample output — [`receipt-good.txt`](samples/receipt-good.txt)
 
 From the **repo root**:
 
 ```bash
-sbt "runMain capstone.receipt.ReceiptApp receipt-good.txt"
+sbt "capstone/runMain capstone.receipt.ReceiptApp receipt-good.txt"
 ```
 
 Example (sbt `[info]` lines omitted):
@@ -168,30 +168,30 @@ Rates in code: **EXEMPT 0%**, **STANDARD 10%**, **REDUCED 5%**. **Total tax** an
 Expect **error lines** printed as they are parsed, then a **Summary** with **`Invalid lines > 0`**. Run:
 
 ```bash
-sbt "runMain capstone.receipt.ReceiptApp receipt-bad.txt"
+sbt "capstone/runMain capstone.receipt.ReceiptApp receipt-bad.txt"
 ```
 
 ---
 
 ## Run
 
-From the **repository root** (this repo uses a **single** sbt project; `capstone/` sources are on the compile path — see root `build.sbt`).
+From the **repository root** (capstone is its **own** sbt subproject — not aggregated into `scala-tutorial`; use `sbt capstone/compile` to build it alone — see root `build.sbt`).
 
 **MiniCli (credit band — implemented):**
 
 ```bash
 # Interactive: prompt, then type e.g. 500 10000
-sbt "runMain capstone.mini.MiniCli"
+sbt "capstone/runMain capstone.mini.MiniCli"
 
 # One argument (non-interactive):
-sbt 'runMain capstone.mini.MiniCli "500 10000"'
+sbt 'capstone/runMain capstone.mini.MiniCli "500 10000"'
 ```
 
 **Receipt boss (`ReceiptApp`) — implemented.** Pass **filename only** (resolved under **`capstone/samples/`**):
 
 ```bash
-sbt "runMain capstone.receipt.ReceiptApp receipt-good.txt"
-sbt "runMain capstone.receipt.ReceiptApp receipt-bad.txt"
+sbt "capstone/runMain capstone.receipt.ReceiptApp receipt-good.txt"
+sbt "capstone/runMain capstone.receipt.ReceiptApp receipt-bad.txt"
 ```
 
 *Keep it fun; Cats will still be there when you open Phase B.*
