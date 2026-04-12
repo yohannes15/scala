@@ -24,7 +24,7 @@ case class Receipt(description: String, taxCode: TaxCode, price: BigDecimal)
 
 def parseReceipt(stream: Generator[String]) = 
   stream.zipWithIndex.foreach { (line, index) =>
-    parseReceiptLine(line, index + 1) match
+    parseLine(line, index + 1) match
       case Right(receipt) =>
         println(
           s"description: ${receipt.description}. " +
@@ -34,7 +34,7 @@ def parseReceipt(stream: Generator[String]) =
       case Left(err) => println(s"error: ${err.msg}")
   }
 
-def parseReceiptLine(line: String, line_no: Int): Either[LineError, Receipt] =
+def parseLine(line: String, line_no: Int): Either[LineError, Receipt] =
   // `split` takes a regex; `|` is special — escape for a literal pipe.
   val lineTokens = line.split("\\|")
   if lineTokens.length != 3 then
