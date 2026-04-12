@@ -1,8 +1,10 @@
 package capstone.receipt
 
 import geny.Generator
-import scala.util.Failure
+import scala.util.Try
 import scala.util.Success
+import scala.util.Failure
+import scala.math.BigDecimal.RoundingMode
 
 sealed trait AppError
 case class LineError(msg: String = "error processing line") extends AppError
@@ -15,8 +17,9 @@ case class Receipt(description: String, taxCode: TaxCode, price: BigDecimal)
 
 /** Capstone 1 — boss project (see `capstone/README.md` — Boss project).
   *
-  * Run:
-  * `sbt "runMain capstone.receipt.ReceiptApp capstone/samples/receipt-good.txt"`
+  * Pass the sample ''filename'' only (e.g. `receipt-good.txt`); resolved under
+  * `capstone/samples/`. Run from repo root:
+  * `sbt "runMain capstone.receipt.ReceiptApp receipt-good.txt"`
   */
 @main def ReceiptApp(textFile: String): Unit =
   println("==================== ReceiptApp =================")
@@ -63,16 +66,19 @@ def parseTaxCode(taxCode: String): Either[LineError, TaxCode] =
 
 def parseDescription(description: String): Either[LineError, String] =
   val desc = description.trim
-  if desc.length > 40 then
+  if desc.isBlank then
+    Left(LineError("description can't be blank"))
+  else if desc.length > 40 then
     Left(LineError("description can't be more than 40 characters"))
   else Right(desc)
 
 def parsePrice(price: String): Either[LineError, BigDecimal] =
-  price.trim().toDoubleOption match
-    case Some(value) =>
+  Try { BigDecimal(price.trim()) } match
+    case Success(value) => 
       if value < 0 then Left(LineError(s"Price needs to be >= 0. Got $value"))
-      else Right(BigDecimal.decimal(value).setScale(2))
-    case _ => Left(LineError(s"Unable to parse price. Got: `$price`"))
+      else Right(value.setScale(2, RoundingMode.HALF_UP))
+    case Failure(exception) => 
+      Left(LineError(s"Unable to parse price. Got: `$price`"))
 
 def getFileStream(textFile: String): Either[FileError, Generator[String]] =
   var samplesDir = os.pwd / "capstone" / "samples"
