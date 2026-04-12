@@ -66,7 +66,9 @@ def parseDescription(description: String): Either[LineError, String] =
 
 def parsePrice(price: String): Either[LineError, BigDecimal] = 
   price.trim().toDoubleOption match
-    case Some(value) => Right(BigDecimal.decimal(value))
+    case Some(value) =>
+      if value < 0 then Left(LineError(s"Price needs to be >= 0. Got $value"))
+      else Right(BigDecimal.decimal(value).setScale(2))
     case _ => Left(LineError(s"Unable to parse price. Got: `$price`"))
 
 def getFileStream(textFile: String): Either[FileError, Generator[String]] = 
