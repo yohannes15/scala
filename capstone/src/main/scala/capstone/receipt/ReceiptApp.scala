@@ -35,7 +35,7 @@ def parseReceipt(stream: Generator[String]): Unit =
   stream.zipWithIndex.foreach { (line, index) =>
     parseLine(line, index + 1) match
       case Right(receipt) => processReceipt(receipt)
-      case Left(err) => println(s"error: ${err.msg}")
+      case Left(err) => println(err.msg.toString)
   }
 
 def parseLine(line: String, line_no: Int): Either[LineError, Receipt] =
@@ -74,6 +74,8 @@ def getFileStream(textFile: String): Either[FileError, Generator[String]] =
   // return a generator
   if !os.exists(samplesDir / textFile) then
     Left(FileError(s"Non existent file: $textFile in path $samplesDir"))
+  else if !textFile.endsWith(".txt") then
+    Left(FileError(s"File `$textFile` not accepted, only `txt` files are allowed."))
   else
     Right(
       os.read.lines.stream(samplesDir / textFile)
