@@ -81,7 +81,7 @@ def parsePrice(price: String): Either[LineError, BigDecimal] =
       Left(LineError(s"Unable to parse price. Got: `$price`"))
 
 def getFileStream(textFile: String): Either[FileError, Generator[String]] =
-  var samplesDir = os.pwd / "capstone" / "samples"
+  val samplesDir = os.pwd / "capstone" / "samples"
   // return a generator
   if !os.exists(samplesDir / textFile) then
     Left(FileError(s"Non existent file: $textFile in path $samplesDir"))
