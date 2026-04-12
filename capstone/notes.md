@@ -79,7 +79,7 @@ collection.foldLeft(initialAccumulator) { (acc, element) =>
 ### Tiny example (sum)
 
 ```scala
-List(1, 2, 3).foldLeft(0)(_ + _)   // 6
+List(1, 2, 3).foldLeft(0)((acc, n) => acc + n) // 6
 // acc=0, n=1 -> 1; acc=1, n=2 -> 3; acc=3, n=3 -> 6
 ```
 
@@ -92,3 +92,27 @@ List(1, 2, 3).foldLeft(0)(_ + _)   // 6
 ### Name
 
 **“Left”** = fold **from the left** (first element first). For commutative sums the direction rarely matters; for ordered or non-commutative combines, use **`foldLeft`** unless you know you need **`foldRight`**.
+
+---
+
+## `Either`: `map` vs `.left.map` (and “left projection”)
+
+**Right-biased `Either`:** `either.map(f)` applies **`f`** only to **`Right`**; a **`Left`** is left unchanged ( **`f`** is not run).
+
+**Left side:** `either.left.map(f)` applies **`f`** only to **`Left`**; a **`Right`** is unchanged. That is the usual way to tweak **error values** (e.g. prefix `"Line 5: "` to a message) without touching the success branch.
+
+**“Left projection”** is the *idea*: “view this `Either` so **`map`** affects **`Left`** instead of **`Right`.”** In older Scala tutorials the API was often spelled **`leftProjection`**; in current Scala you use **`either.left.map(...)`** — same concept, modern name.
+
+| Goal | Typical call |
+| --- | --- |
+| Transform **`Right`** | `either.map(...)` |
+| Transform **`Left`** | `either.left.map(...)` |
+| Swap sides, then use normal **`map`** | `either.swap.map(...).swap` |
+
+Tiny example:
+
+```scala
+val e: Either[String, Int] = Left("oops")
+e.map(s => s + "!")           // Left("oops") — still the same Left
+e.left.map(s => s"err: $s")   // Left("err: oops")
+```
