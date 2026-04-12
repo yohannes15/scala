@@ -15,7 +15,8 @@ case class Receipt(description: String, taxCode: TaxCode, price: BigDecimal)
 
 /** Capstone 1 — boss project (see `capstone/README.md` — Boss project).
   *
-  * Run: `sbt "runMain capstone.receipt.ReceiptApp capstone/samples/receipt-good.txt"`
+  * Run:
+  * `sbt "runMain capstone.receipt.ReceiptApp capstone/samples/receipt-good.txt"`
   */
 @main def ReceiptApp(textFile: String): Unit =
   println("==================== ReceiptApp =================")
@@ -24,18 +25,18 @@ case class Receipt(description: String, taxCode: TaxCode, price: BigDecimal)
     // Generator is lazy: effects (println) only run when the stream is traversed — use foreach, not map alone.
     case Right(g) => parseReceipt(g)
 
-def processReceipt(receipt: Receipt): Unit = 
+def processReceipt(receipt: Receipt): Unit =
   println(
     s"description: ${receipt.description}. " +
-    s"taxcode: ${receipt.taxCode}. " +
-    s"price: ${receipt.price}"
+      s"taxcode: ${receipt.taxCode}. " +
+      s"price: ${receipt.price}"
   )
 
-def parseReceipt(stream: Generator[String]): Unit = 
+def parseReceipt(stream: Generator[String]): Unit =
   stream.zipWithIndex.foreach { (line, index) =>
     parseLine(line, index + 1) match
       case Right(receipt) => processReceipt(receipt)
-      case Left(err) => println(err.msg.toString)
+      case Left(err)      => println(err.msg.toString)
   }
 
 def parseLine(line: String, line_no: Int): Either[LineError, Receipt] =
@@ -43,43 +44,49 @@ def parseLine(line: String, line_no: Int): Either[LineError, Receipt] =
   val lineTokens = line.split("\\|")
   print(s"$line_no: ")
   if lineTokens.length != 3 then
-    Left(LineError(s"Expected format {description}|{taxCode}|{price}. Got: `$line`"))
-  else 
+    Left(
+      LineError(
+        s"Expected format {description}|{taxCode}|{price}. Got: `$line`"
+      )
+    )
+  else
     for
       description <- parseDescription(lineTokens(0))
       taxCode <- parseTaxCode(lineTokens(1))
       price <- parsePrice(lineTokens(2))
-    yield
-      Receipt(description, taxCode, price)
+    yield Receipt(description, taxCode, price)
 
 def parseTaxCode(taxCode: String): Either[LineError, TaxCode] =
   TaxCode.values
-  .find(tc => tc.toString == taxCode.trim().capitalize)
-  .toRight(LineError(s"Unable to parse tax code: Got: `$taxCode`"))
-  
-def parseDescription(description: String): Either[LineError, String] = 
-  val desc = description.trim
-  if desc.length > 40 then 
-    Left(LineError("description can't be more than 40 characters"))
-  else
-    Right(desc)
+    .find(tc => tc.toString == taxCode.trim().toUpperCase)
+    .toRight(LineError(s"Unable to parse tax code: Got: `$taxCode`"))
 
-def parsePrice(price: String): Either[LineError, BigDecimal] = 
+def parseDescription(description: String): Either[LineError, String] =
+  val desc = description.trim
+  if desc.length > 40 then
+    Left(LineError("description can't be more than 40 characters"))
+  else Right(desc)
+
+def parsePrice(price: String): Either[LineError, BigDecimal] =
   price.trim().toDoubleOption match
     case Some(value) =>
       if value < 0 then Left(LineError(s"Price needs to be >= 0. Got $value"))
       else Right(BigDecimal.decimal(value).setScale(2))
     case _ => Left(LineError(s"Unable to parse price. Got: `$price`"))
 
-def getFileStream(textFile: String): Either[FileError, Generator[String]] = 
-  var samplesDir = os.pwd /  "capstone" / "samples"
+def getFileStream(textFile: String): Either[FileError, Generator[String]] =
+  var samplesDir = os.pwd / "capstone" / "samples"
   // return a generator
   if !os.exists(samplesDir / textFile) then
     Left(FileError(s"Non existent file: $textFile in path $samplesDir"))
   else if !textFile.endsWith(".txt") then
-    Left(FileError(s"File `$textFile` not accepted, only `txt` files are allowed."))
+    Left(
+      FileError(s"File `$textFile` not accepted, only `txt` files are allowed.")
+    )
   else
     Right(
-      os.read.lines.stream(samplesDir / textFile)
-      .map(_.trim).dropWhile(x => x.isEmpty())
+      os.read.lines
+        .stream(samplesDir / textFile)
+        .map(_.trim)
+        .dropWhile(x => x.isEmpty())
     )
