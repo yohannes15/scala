@@ -1,7 +1,6 @@
 package capstone.receipt
 
 import geny.Generator
-import scala.util.Try
 import scala.util.Failure
 import scala.util.Success
 
@@ -44,7 +43,7 @@ def parseLine(line: String, line_no: Int): Either[LineError, Receipt] =
   val lineTokens = line.split("\\|")
   print(s"$line_no: ")
   if lineTokens.length != 3 then
-    Left(LineError(s"Expected format {description}|{taxCode}|{price}. Got: $line"))
+    Left(LineError(s"Expected format {description}|{taxCode}|{price}. Got: `$line`"))
   else 
     for
       description <- parseDescription(lineTokens(0))
@@ -53,10 +52,10 @@ def parseLine(line: String, line_no: Int): Either[LineError, Receipt] =
     yield
       Receipt(description, taxCode, price)
 
-def parseTaxCode(taxCode: String): Either[LineError, TaxCode] = 
-  Try { TaxCode.valueOf(taxCode.trim().capitalize) } match
-    case Failure(exception) => Left(LineError(s"Error parsing tax code: ${exception.toString}"))
-    case Success(code) => Right(code)
+def parseTaxCode(taxCode: String): Either[LineError, TaxCode] =
+  TaxCode.values
+  .find(tc => tc.toString == taxCode.trim().capitalize)
+  .toRight(LineError(s"Unable to parse tax code: Got: `$taxCode`"))
   
 def parseDescription(description: String): Either[LineError, String] = 
   val desc = description.trim
@@ -68,7 +67,7 @@ def parseDescription(description: String): Either[LineError, String] =
 def parsePrice(price: String): Either[LineError, BigDecimal] = 
   price.trim().toDoubleOption match
     case Some(value) => Right(BigDecimal.decimal(value))
-    case _ => Left(LineError(s"Unable to parse price. Got: $price"))
+    case _ => Left(LineError(s"Unable to parse price. Got: `$price`"))
 
 def getFileStream(textFile: String): Either[FileError, Generator[String]] = 
   var samplesDir = os.pwd /  "capstone" / "samples"
