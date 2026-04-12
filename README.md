@@ -21,11 +21,13 @@
 
 Set these up once; slow tooling kills momentum.
 
-| Tool | Purpose | Link |
-| --- | --- | --- |
-| **JDK 17+** (LTS) | JVM for Scala 3 | [Adoptium Temurin](https://adoptium.net/) |
-| **sbt** | build / REPL / tests | [sbt download](https://www.scala-sbt.org/download.html) |
-| **Metals** | IDE support in VS Code / Cursor / IntelliJ | [Metals](https://scalameta.org/metals/) |
+
+| Tool              | Purpose                                    | Link                                                    |
+| ----------------- | ------------------------------------------ | ------------------------------------------------------- |
+| **JDK 17+** (LTS) | JVM for Scala 3                            | [Adoptium Temurin](https://adoptium.net/)               |
+| **sbt**           | build / REPL / tests                       | [sbt download](https://www.scala-sbt.org/download.html) |
+| **Metals**        | IDE support in VS Code / Cursor / IntelliJ | [Metals](https://scalameta.org/metals/)                 |
+
 
 **Minimal sanity check:** `sbt new http4s/http4s.g8` or clone the [http4s quickstart](https://http4s.org/versions/) and run the server locally.
 
@@ -40,17 +42,15 @@ Set these up once; slow tooling kills momentum.
 1. [Scala 3 Book](https://docs.scala-lang.org/scala3/book/introduction.html) — work through at least: **Basics**, **Types**, **Control structures**, **Collections**, **FP**, **Contextual abstractions** (high level).
 2. [Tour of Scala](https://docs.scala-lang.org/tour/tour-of-scala.html) — skim as reference.
 
-### Phase A — Videos (parallel track)
+### Phase A — Optional extras
 
-- [Rock the JVM — Scala](https://rockthejvm.com/p/the-scala-bundle) — use their **Scala 3** modules as your “lecture,” docs as your “reference.”
-
-### Practice
-
-- 50–100 small exercises: [Scala Exercises](https://www.scala-exercises.org/scala_tutorial) (or Rock the JVM exercises if bundled).
+- **Video:** Scala videos on topics you care about (e.g. `Either`, FP, `map` — get comfortable with the FP style).
+- **Exercism:** [Exercism — Scala](https://exercism.org/tracks/scala/exercises) (requires a free account).
+- **Optional puzzles:** [Advent of Code](https://adventofcode.com/) — past years stay up; each puzzle includes **example input/output in the statement** you can solve against **without logging in** (a login only matters if you want your personalized puzzle input / leaderboard).
 
 **Exit criteria:** implement a CLI or small library that parses input and returns `Either[String, Result]`—same shape as validation in APIs.
 
-**Structured capstone (optional but recommended):** **[`capstone/README.md`](capstone/README.md)** — *Capstone 1* (**complete** in this repo: **MiniCli** + **ReceiptApp**; optional AoC/Exercism reps) before opening Cats docs.
+**Structured capstone (optional but recommended):** **[`capstone/README.md`](capstone/README.md)** — *Capstone 1* (**complete** in this repo: **MiniCli** + **ReceiptApp**; optional AoC-style reps) before opening Cats docs.
 
 ---
 
@@ -63,9 +63,10 @@ Set these up once; slow tooling kills momentum.
 1. [Cats](https://typelevel.org/cats/) — start with **getting started** and **data types** (`Option`, `Either`, `Validated`, `NonEmptyList`).
 2. [Cats Effect](https://typelevel.org/cats-effect/) — **`IO`**, **`Resource`**, **thread model** (skim), **concurrency** basics.
 
-### Phase B — Videos
+### Phase B — Optional extras
 
-- Rock the JVM: **Cats** and **Cats Effect** courses (follow the same order as docs).
+- [Rock the JVM](https://rockthejvm.com/): **Cats** and **Cats Effect** courses (paid; follow the same order as docs).
+- Other free videos on **Cats** and **Cats Effect**. 
 
 **Exit criteria:** write a program that reads config, opens a `Resource` (e.g. file or fake connection), runs `IO`, shuts down cleanly.
 
@@ -83,7 +84,7 @@ Set these up once; slow tooling kills momentum.
 
 ### Phase C — Videos
 
-- Rock the JVM: **Cats Effect** + **http4s** content (build the official quickstart alongside).
+- [Rock the JVM](https://rockthejvm.com/): **Cats Effect** + **http4s** content (paid; build the [official quickstart](https://http4s.org/versions/) alongside).
 
 **Milestone project (v1):**
 
@@ -131,12 +132,14 @@ Store items **in memory** (`Ref` from Cats Effect) first.
 
 Pick topics as needed; use **docs + one reference implementation** in your repo.
 
-| Topic | Where to start |
-| --- | --- |
-| Structured logging | [log4cats](https://typelevel.org/log4cats/) (common with Typelevel stack) |
-| Configuration | [Ciris](https://cir.is/) or [pureconfig](https://pureconfig.github.io/docs/) or lightbend config — pick one and stay consistent |
-| Testing | [MUnit](https://scalameta.org/munit/) or [ScalaTest](https://www.scalatest.org/) + [http4s client](https://http4s.org/v1.0/client/) for integration tests |
-| OpenAPI (optional) | [tapir](https://tapir.softwaremill.com/en/) (often introduced *after* you’re comfortable with http4s) |
+
+| Topic              | Where to start                                                                                                                                            |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Structured logging | [log4cats](https://typelevel.org/log4cats/) (common with Typelevel stack)                                                                                 |
+| Configuration      | [Ciris](https://cir.is/) or [pureconfig](https://pureconfig.github.io/docs/) or lightbend config — pick one and stay consistent                           |
+| Testing            | [MUnit](https://scalameta.org/munit/) or [ScalaTest](https://www.scalatest.org/) + [http4s client](https://http4s.org/v1.0/client/) for integration tests |
+| OpenAPI (optional) | [tapir](https://tapir.softwaremill.com/en/) (often introduced *after* you’re comfortable with http4s)                                                     |
+
 
 ---
 
@@ -157,16 +160,18 @@ Pick topics as needed; use **docs + one reference implementation** in your repo.
 
 Assume **~8–12 hrs/week**; adjust proportionally.
 
-| Week | Focus | Deliverable |
-| --- | --- | --- |
-| **1** | Scala 3 syntax + tooling | sbt project runs; small `Either`-based validation |
-| **2** | Collections + ADTs + `for`-comprehensions | domain models for your API (`Item`, errors) |
-| **3** | Cats core (`Validated`, `Either` pipelines) | validation module with clear error accumulation |
-| **4** | Cats Effect (`IO`, `Resource`) | shutdown-safe `IO` app + `Ref` in-memory store |
-| **5** | http4s routes + middleware | REST v1 in-memory |
-| **6** | circe codecs + error mapping | stable JSON + consistent error responses |
-| **7** | doobie + Postgres + Flyway | same API backed by DB + migrations |
-| **8** | Integration tests + hardening | tests for happy paths + DB failures; optional logging/config |
+
+| Week  | Focus                                       | Deliverable                                                  |
+| ----- | ------------------------------------------- | ------------------------------------------------------------ |
+| **1** | Scala 3 syntax + tooling                    | sbt project runs; small `Either`-based validation            |
+| **2** | Collections + ADTs + `for`-comprehensions   | domain models for your API (`Item`, errors)                  |
+| **3** | Cats core (`Validated`, `Either` pipelines) | validation module with clear error accumulation              |
+| **4** | Cats Effect (`IO`, `Resource`)              | shutdown-safe `IO` app + `Ref` in-memory store               |
+| **5** | http4s routes + middleware                  | REST v1 in-memory                                            |
+| **6** | circe codecs + error mapping                | stable JSON + consistent error responses                     |
+| **7** | doobie + Postgres + Flyway                  | same API backed by DB + migrations                           |
+| **8** | Integration tests + hardening               | tests for happy paths + DB failures; optional logging/config |
+
 
 **After week 8:** spend **2–3 weeks** on **ZIO + zio-http** port or parallel microservice.
 
@@ -174,23 +179,25 @@ Assume **~8–12 hrs/week**; adjust proportionally.
 
 ## Quick link index
 
-| Resource | URL |
-| --- | --- |
-| Scala 3 Book | [docs.scala-lang.org — Scala 3 Book](https://docs.scala-lang.org/scala3/book/introduction.html) |
-| Tour of Scala | [docs.scala-lang.org — Tour](https://docs.scala-lang.org/tour/tour-of-scala.html) |
-| Scala Exercises | [scala-exercises.org](https://www.scala-exercises.org/scala_tutorial) |
-| Rock the JVM | [rockthejvm.com](https://rockthejvm.com/) |
-| Coursera FP in Scala (optional depth) | [coursera.org — progfun1](https://www.coursera.org/learn/progfun1) |
-| Cats | [typelevel.org/cats](https://typelevel.org/cats/) |
-| Cats Effect | [typelevel.org/cats-effect](https://typelevel.org/cats-effect/) |
-| http4s | [http4s.org/versions](https://http4s.org/versions/) |
-| circe | [circe.github.io](https://circe.github.io/circe/) |
-| doobie | [tpolecat.github.io/doobie](https://tpolecat.github.io/doobie/docs/index.html) |
-| Flyway | [documentation.red-gate.com/flyway](https://documentation.red-gate.com/flyway/) |
-| sbt | [scala-sbt.org](https://www.scala-sbt.org/) |
-| Metals | [scalameta.org/metals](https://scalameta.org/metals/) |
-| ZIO | [zio.dev](https://zio.dev/) |
-| ZIO HTTP | [zio.dev/zio-http](https://zio.dev/zio-http/) |
+
+| Resource       | URL                                                                                             |
+| -------------- | ----------------------------------------------------------------------------------------------- |
+| Scala 3 Book   | [docs.scala-lang.org — Scala 3 Book](https://docs.scala-lang.org/scala3/book/introduction.html) |
+| Tour of Scala  | [docs.scala-lang.org — Tour](https://docs.scala-lang.org/tour/tour-of-scala.html)               |
+| Advent of Code | [adventofcode.com](https://adventofcode.com/) (examples in puzzle text need no account)         |
+| Exercism (Scala) | [exercism.org/tracks/scala](https://exercism.org/tracks/scala)                               |
+| Rock the JVM | [rockthejvm.com](https://rockthejvm.com/)                                                       |
+| Cats           | [typelevel.org/cats](https://typelevel.org/cats/)                                               |
+| Cats Effect    | [typelevel.org/cats-effect](https://typelevel.org/cats-effect/)                                 |
+| http4s         | [http4s.org/versions](https://http4s.org/versions/)                                             |
+| circe          | [circe.github.io](https://circe.github.io/circe/)                                               |
+| doobie         | [tpolecat.github.io/doobie](https://tpolecat.github.io/doobie/docs/index.html)                  |
+| Flyway         | [documentation.red-gate.com/flyway](https://documentation.red-gate.com/flyway/)                 |
+| sbt            | [scala-sbt.org](https://www.scala-sbt.org/)                                                     |
+| Metals         | [scalameta.org/metals](https://scalameta.org/metals/)                                           |
+| ZIO            | [zio.dev](https://zio.dev/)                                                                     |
+| ZIO HTTP       | [zio.dev/zio-http](https://zio.dev/zio-http/)                                                   |
+
 
 ---
 

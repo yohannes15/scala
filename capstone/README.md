@@ -1,6 +1,6 @@
 # Capstone 1 — before Cats
 
-**Status: complete** — [`MiniCli`](src/main/scala/capstone/mini/MiniCli.scala) (§1) and [`ReceiptApp`](src/main/scala/capstone/receipt/ReceiptApp.scala) (boss) are implemented. Optional items below (AoC, Exercism) remain optional.
+**Status: complete** — [`MiniCli`](src/main/scala/capstone/mini/MiniCli.scala) (§1) and [`ReceiptApp`](src/main/scala/capstone/receipt/ReceiptApp.scala) (boss) are implemented. Optional items below (e.g. AoC reps) remain optional.
 
 This is the **first capstone** in this repo: do it before **[Phase B — Cats → Cats Effect](../README.md)** (see main `README.md`).
 
@@ -55,10 +55,9 @@ Checklist (this CLI) — **done:**
 
 ## 2. Reps that feel like games
 
-- [ ] **[Advent of Code](https://adventofcode.com/)** — any year, **days 1–3** only. Parse in Scala; use **`Either`** when input can be junk.
-- [ ] **[Exercism — Scala](https://exercism.org/tracks/scala)** — **3–5** easy exercises; prefer **`Option`** / lists.
+- [ ] **[Advent of Code](https://adventofcode.com/)** — any year, **days 1–3** (or similar). Parse in Scala; use **`Either`** when input can be junk. Each puzzle includes **example I/O** in the text — you can practice **without** creating an account; a login is only for personalized input / leaderboard.
 
-*(External sites — no subfolder required; add notes under `capstone/notes/` if you want, optional.)*
+*(No subfolder required; add notes under `capstone/notes/` if you want, optional.)*
 
 ---
 
@@ -85,7 +84,7 @@ Main roadmap: **[README.md](../README.md)** → **Phase B — Cats → Cats Effe
 ## If you get stuck
 
 - Smaller scope: **half** a CLI (validation only, print `Either` with `println`).
-- Skip Exercism if AoC is more fun — **one** track is enough.
+- Prefer **this repo** (`learning/`, capstone) first; add **AoC** when you want puzzle variety.
 
 ---
 
