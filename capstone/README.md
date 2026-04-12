@@ -1,10 +1,12 @@
 # Capstone 1 — before Cats
 
-This is the **first capstone** in this repo: finish it before **[Phase B — Cats → Cats Effect](../README.md)** (see main `README.md`).
+**Status: complete** — [`MiniCli`](src/main/scala/capstone/mini/MiniCli.scala) (§1) and [`ReceiptApp`](src/main/scala/capstone/receipt/ReceiptApp.scala) (boss) are implemented. Optional items below (AoC, Exercism) remain optional.
+
+This is the **first capstone** in this repo: do it before **[Phase B — Cats → Cats Effect](../README.md)** (see main `README.md`).
 
 **Everything for this capstone lives under the `capstone/` folder** (this file, samples, and Scala sources).
 
-**Goal:** Build **habit**, `**Either`**, and **small programs** so Cats feels like a new library, not a second first language.
+**Goal:** Build **habit**, **Either**, and **small programs** so Cats feels like a new library, not a second first language.
 
 **Time box:** About **1–2 weeks** at an easy pace (adjust freely).
 
@@ -13,50 +15,48 @@ This is the **first capstone** in this repo: finish it before **[Phase B — Cat
 ## Layout (`capstone/`)
 
 
-| Path                           | Purpose                                                                                                                      |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| `**README.md`**                | This checklist (steps 1–4 + boss project)                                                                                    |
-| `**notes.md**`                 | Scratch notes for the capstone                                                                                               |
-| `**src/main/scala/capstone/**` | Code — `capstone.mini` (**MiniCli** — done), `capstone.receipt` (**ReceiptApp** — boss: **in progress**, see § Boss project) |
-| `**samples/`**                 | Example `.txt` files for the boss receipt parser                                                                             |
+| Path | Purpose |
+| --- | --- |
+| **`README.md`** | This checklist (steps 1–4 + boss project) |
+| **`notes.md`** | Scratch notes (parsing, `Either`, `foldLeft`, …) |
+| **`src/main/scala/capstone/`** | **`capstone.mini`** — **MiniCli** · **`capstone.receipt`** — **ReceiptApp** (both **done**) |
+| **`samples/`** | Example `.txt` files for **ReceiptApp** (`receipt-good.txt`, `receipt-bad.txt`) |
 
 
 ---
 
 ## Why this exists
 
-Cats assumes you’re comfortable with **generic types**, `**map` / `flatMap`** intuition, and **errors as values** (`Option`, `Either`). This capstone is the **playground** before **type classes** and `**IO`**.
+Cats assumes you’re comfortable with **generic types**, **map / flatMap** intuition, and **errors as values** (`Option`, `Either`). This capstone is the **playground** before **type classes** and **IO**.
 
 ---
 
 ## 1. Tiny CLI (Phase A capstone)
 
-**Implemented:** `[MiniCli.scala](src/main/scala/capstone/mini/MiniCli.scala)` — fake **credit band**: **FICO-style score** + **income (USD)** → `**Approved`** or `**Declined**` with a **reason** string.
+**Implemented:** [`MiniCli.scala`](src/main/scala/capstone/mini/MiniCli.scala) — fake **credit band**: **FICO-style score** + **income (USD)** → **Approved** or **Declined** with a **reason** string.
 
+| Piece | What you built |
+| --- | --- |
+| **Input** | One line with **two** numbers, separated by **space or comma** (regex split `[,\\s]+`). **`@main`** takes an optional **single string** argument; if omitted / empty, **stdin** is read after a prompt. |
+| **Model** | **`CreditInfo`** (`creditScore`, `income`) with a **private** constructor; only **`CreditInfo.apply`** can build values after validation. |
+| **Errors** | **`Either[InvalidInput, CreditInfo]`** — not `String` on the left; **`InvalidInput`** carries the message. Parsing short-circuits on first **`Left`**. |
+| **Validation** | Score in **250–900**; income **≥ 0**. |
+| **Decision** | Sealed-style **`Decision`**: **Approved** / **Declined**, each with **name** + **reason**. Thresholds **450** (credit) and **7500** (income). |
+| **UX** | **Left:** print error. **Right:** echo fields, then print decision **name** and **reason**. |
 
-| Piece          | What you built                                                                                                                                                                                                                                                           |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Input**      | One line with **two** numbers, separated by **space or comma** (regex split `[,\\s]+`). `**@main`** takes an optional **single string** argument; if omitted / empty, `**stdin`** is read after a prompt.                                                                |
-| **Model**      | `**CreditInfo`** (`creditScore`, `income`) with a **private** constructor; only `**CreditInfo.apply`** can build values after validation.                                                                                                                                |
-| **Errors**     | `**Either[InvalidInput, CreditInfo]`** — not `String` on the left; `**InvalidInput**` carries the message. Parsing and validation short-circuit on first `**Left**`.                                                                                                     |
-| **Validation** | Score in **250–900**; income **≥ 0**.                                                                                                                                                                                                                                    |
-| **Decision**   | Sealed-style `**Decision`**: `**Approved**` / `**Declined**`, each with `**name**` + `**reason**`. Rules use `**CREDIT_MIN_THRESHOLD**` (450) and `**INCOME_MIN_THRESHOLD**` (7500): decline if score or income is below the corresponding threshold; otherwise approve. |
-| **UX**         | `**Left`**: print error message. `**Right**`: echo score/income, then print decision `**name**`: `**reason**`.                                                                                                                                                           |
+Checklist (this CLI) — **done:**
 
-
-Checklist (this CLI):
-
-- Package `**capstone.mini**` — `**MiniCli.scala**` (not `Basics.scala` “hello”).
-- One `**@main**`: **stdin** (prompt) **or** one **string** argument (default `""` → interactive).
-- Parse into a `**case class`**; failures as `**Either**`; clear `**println**` for left/right.
-- Theme: **credit band** (score + income → approved / declined with reason).
+- [x] Package **`capstone.mini`** — **`MiniCli.scala`** (not `Basics.scala` “hello”).
+- [x] One **`@main`**: **stdin** (prompt) **or** one **string** argument (default `""` → interactive).
+- [x] Parse into a **`case class`**; failures as **`Either`**; clear **`println`** for left/right.
+- [x] Theme: **credit band** (score + income → approved / declined with reason).
 
 ---
 
 ## 2. Reps that feel like games
 
-- **[Advent of Code](https://adventofcode.com/)** — any year, **days 1–3** only. Parse in Scala; use `**Either`** when input can be junk.
-- **[Exercism — Scala](https://exercism.org/tracks/scala)** — **3–5** easy exercises; prefer `**Option`** / lists.
+- [ ] **[Advent of Code](https://adventofcode.com/)** — any year, **days 1–3** only. Parse in Scala; use **`Either`** when input can be junk.
+- [ ] **[Exercism — Scala](https://exercism.org/tracks/scala)** — **3–5** easy exercises; prefer **`Option`** / lists.
 
 *(External sites — no subfolder required; add notes under `capstone/notes/` if you want, optional.)*
 
@@ -64,15 +64,15 @@ Checklist (this CLI):
 
 ## 3. Brush-up (only if rusty)
 
-- Skim `**Either*`* in the [Scala 3 Book — functional error handling](https://docs.scala-lang.org/scala3/book/fp-functional-error-handling.html) (and `Option` there).
-- `**for`-comprehension** chaining **two** `Either` steps (parse → validate).
+- [ ] Skim **`Either`** in the [Scala 3 Book — functional error handling](https://docs.scala-lang.org/scala3/book/fp-functional-error-handling.html) (and **`Option`** there).
+- [ ] **`for`-comprehension** chaining **two** **`Either`** steps (parse → validate).
 
 ---
 
 ## 4. Stop — you’re ready for Cats when…
 
-- You can **explain** in one sentence why `**flatMap`** on `Either` short-circuits on first **Left**.
-- You’ve **finished** one small CLI or AoC mini you’d show without apologizing.
+- [x] You can **explain** in one sentence why **`flatMap`** on **`Either`** short-circuits on first **Left**.
+- [x] You’ve **finished** this capstone’s **MiniCli** + **ReceiptApp** (and optional reps below if you want more practice).
 
 ---
 
@@ -95,15 +95,18 @@ Main roadmap: **[README.md](../README.md)** → **Phase B — Cats → Cats Effe
 
 **Why it tests you:** Real parsing, **line-level errors**, **ADTs**, **`Either`**, **aggregation**, one **file + `@main`** — same *shape* as config/API validation at work. This repo uses **Scala Toolkit** (`os`, streaming) on the classpath — still **no Cats**.
 
-### Implementation — [`ReceiptApp.scala`](src/main/scala/capstone/receipt/ReceiptApp.scala)
+### Implementation — [`ReceiptApp.scala`](src/main/scala/capstone/receipt/ReceiptApp.scala) — **done**
 
-#### To do
+| Feature | Notes |
+| --- | --- |
+| **Input** | Filename under **`capstone/samples/`**; lines streamed with **`os.read.lines`** + **`Generator`**. |
+| **Parsing** | Three fields per line separated by **`|`**; **`enum TaxCode`** with **`BigDecimal`** rates (`"0.1"`, `"0.05"`, `"0.00"`); **`Either`** per field; **`parsePrice`** uses **`Try(BigDecimal(...)).setScale(2, HALF_UP)`**. |
+| **Line errors** | **Line numbers** via **`parsings.left.map(...)`** so helpers stay simple. Full file scan: invalid lines **`println`**’d, summary still built. |
+| **Summary** | **`foldLeft`** into **`Summary`**: valid/invalid counts, **subtotals per `TaxCode`**, **`totalTax`**, **`grandTotal`** (scaled **2** places). **`Summary.toString`** prepends a banner; no I/O inside **`toString`**. |
 
-Only this is left for the boss spec; the rest (parsing, `Either`, samples path, per-line output, etc.) is in place.
+**Price scale:** After parsing the price string to **`BigDecimal`**, values are normalized to **two decimal places** (`parsePrice`).
 
-- **Aggregated totals after the file is read:** line count, **subtotal per `taxCode`**, **total tax**, **grand total**, with rates defined in code/comments — same *shape* as **Output (success)** below and the **target** sample table.
-
-**What “scale 2 after parse” means:** After parsing the **price string** to **`BigDecimal`**, normalize to **two decimal places** (e.g. `4.5` → `4.50`). In code, `parsePrice` uses `Try(BigDecimal(...))` then `setScale(2, RoundingMode.HALF_UP)`.
+**Boss checklist — done:** [x] parse + validate + **`TaxCode`** · [x] **`Summary`** (counts, subtotals, tax, grand total) · [x] line numbers on errors · [x] full-file scan (no fail-fast) · [x] samples **`receipt-good.txt`** / **`receipt-bad.txt`**.
 
 ### Input
 
@@ -137,39 +140,37 @@ Only this is left for the boss spec; the rest (parsing, `Either`, samples path, 
 
 From the **repo root**, `sbt "runMain capstone.receipt.ReceiptApp receipt-good.txt"` and the same with **`receipt-bad.txt`** work (files live in [`samples/`](samples/); pass **basename only**).
 
-### Sample output — success (**current** `ReceiptApp`)
+### Sample output — [`receipt-good.txt`](samples/receipt-good.txt)
 
-With `[samples/receipt-good.txt](samples/receipt-good.txt)` (three valid lines), from the **repo root**:
+From the **repo root**:
 
 ```bash
 sbt "runMain capstone.receipt.ReceiptApp receipt-good.txt"
 ```
 
-Example console output (sbt noise omitted):
+Example (sbt `[info]` lines omitted):
 
 ```text
-==================== ReceiptApp =================
-1: description: Coffee beans. taxcode: STANDARD. price: 4.50
-2: description: Annual fee. taxcode: EXEMPT. price: 0.00
-3: description: Snack. taxcode: REDUCED. price: 1.25
+================== ReceiptApp =================
+==================== Summary ==================
+Valid lines                ->  3
+Invalid lines              ->  0
+Subtotal EXEMPT            ->  0.00
+Subtotal STANDARD          ->  4.50
+Subtotal REDUCED           ->  1.25
+Total tax                  ->  0.51
+Grand total                ->  6.26
 ```
 
-### Sample output — success (**target**, tax summary not implemented yet)
+Rates in code: **EXEMPT 0%**, **STANDARD 10%**, **REDUCED 5%**. **Total tax** and **grand total** use **`RoundingMode.HALF_UP`** at scale **2** (so totals may differ slightly from unrounded intermediate sums).
 
-When **aggregation** matches the **Output (success)** bullet list above, you might print something like the following (rates fixed in code/comments: **EXEMPT 0%**, **STANDARD 10%**, **REDUCED 5%**; line prices from `receipt-good.txt`).
+### Sample output — [`receipt-bad.txt`](samples/receipt-bad.txt)
 
+Expect **error lines** printed as they are parsed, then a **Summary** with **`Invalid lines > 0`**. Run:
 
-|                                             |                                             |
-| ------------------------------------------- | ------------------------------------------- |
-| Lines read                                  | 3                                           |
-| Subtotal **STANDARD**                       | 4.50                                        |
-| Subtotal **EXEMPT**                         | 0.00                                        |
-| Subtotal **REDUCED**                        | 1.25                                        |
-| **Total tax**                               | 0.5125 (example: 4.50×10% + 0×0% + 1.25×5%) |
-| **Grand total** (sum of prices + total tax) | **6.2625**                                  |
-
-
-Exact rounding policy (**`BigDecimal`** scale / `RoundingMode`) should appear in a **comment** next to your tax math — the table is the shape the README expects, not a golden file yet.
+```bash
+sbt "runMain capstone.receipt.ReceiptApp receipt-bad.txt"
+```
 
 ---
 
@@ -187,11 +188,11 @@ sbt "runMain capstone.mini.MiniCli"
 sbt 'runMain capstone.mini.MiniCli "500 10000"'
 ```
 
-**Receipt boss (`ReceiptApp`) — in progress** (line parsing works; **aggregated tax/totals** still to do). Pass **filename only**; file is resolved under **`capstone/samples/`**:
+**Receipt boss (`ReceiptApp`) — implemented.** Pass **filename only** (resolved under **`capstone/samples/`**):
 
 ```bash
 sbt "runMain capstone.receipt.ReceiptApp receipt-good.txt"
 sbt "runMain capstone.receipt.ReceiptApp receipt-bad.txt"
 ```
 
-*Keep it fun; Cats will still be there when this capstone is done.*
+*Keep it fun; Cats will still be there when you open Phase B.*

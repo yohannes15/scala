@@ -1,6 +1,6 @@
-# Capstone notes — `MiniCli` (credit band)
+# Capstone notes — Capstone 1 (complete)
 
-Scratch notes for **Capstone 1**: fake credit decision CLI — parse score + income, **`Either`**, regex `split`, empty-line edge case; plus **`foldLeft`** for **Receipt** streaming summaries. See **`capstone/README.md`** for the full project description.
+Scratch notes while building **MiniCli** (credit band) and **ReceiptApp** (receipt lines + tax **`Summary`**): **`Either`**, regex `split`, empty-line edge case, **`foldLeft`** over a stream, **`Either.left.map`** for line-number prefixes. See **`capstone/README.md`** for the checklist and run commands.
 
 ## Input parsing
 

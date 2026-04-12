@@ -35,7 +35,7 @@ case class Summary(
     ).setScale(2, RoundingMode.HALF_UP)
 
   override def toString: String =
-    println("==================== Summary ==================")
+    "==================== Summary ==================\n" +
     (
       // Line summary
       Seq(
