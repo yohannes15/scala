@@ -1,6 +1,6 @@
 # Capstone notes — `MiniCli` (credit band)
 
-Scratch notes for **Capstone 1**: fake credit decision CLI — parse score + income, **`Either`**, regex `split`, empty-line edge case. See **`capstone/README.md`** for the full project description.
+Scratch notes for **Capstone 1**: fake credit decision CLI — parse score + income, **`Either`**, regex `split`, empty-line edge case; plus **`foldLeft`** for **Receipt** streaming summaries. See **`capstone/README.md`** for the full project description.
 
 ## Input parsing
 
@@ -48,3 +48,47 @@ object Credit { def trusted(cs: Int, income: Int): Credit = new Credit(cs, incom
 ```
 
 Syntax: **`private case class`** (class hidden) vs **`case class Name private (...)`** — `private` **after** the name, before `(`.
+
+---
+
+## `foldLeft` (reduce a stream to one summary)
+
+**Idea:** You have **many** items (e.g. lines from a file) and want **one** result (counts, subtotals, tax, …). **`foldLeft`** walks the collection **in order** from the **left**, carrying a **running accumulator** and updating it for each element.
+
+### Shape (Scala)
+
+```scala
+collection.foldLeft(initialAccumulator) { (acc, element) =>
+  // compute nextAccumulator from acc and element
+  ???
+}
+```
+
+- **`initialAccumulator`:** your “empty summary” before any line (e.g. zeros, empty subtotals).
+- **`(acc, element) => ...`:** one step — given **summary so far** and **next line**, return the **new** summary.
+- **Result:** final accumulator after the last element — **no need to store all lines** in memory (streaming-friendly if the collection is lazy / iterator-based).
+
+### Compare
+
+| Method | Result |
+| --- | --- |
+| **`map`** | Same *count* of elements, each transformed. |
+| **`foreach`** | **`Unit`** — only side effects; no returned summary. |
+| **`foldLeft`** | **One** value — the folded summary. |
+
+### Tiny example (sum)
+
+```scala
+List(1, 2, 3).foldLeft(0)(_ + _)   // 6
+// acc=0, n=1 -> 1; acc=1, n=2 -> 3; acc=3, n=3 -> 6
+```
+
+### Receipt / streaming angle
+
+- **Accumulator** can be a small **`case class`** (valid line count, invalid count, subtotals per `TaxCode`, running tax, …) — **fixed size**, not a `List` of every line.
+- Each step: **`parseLine(...)` → `Either`** → on **`Right(receipt)`** add price/tax into the right buckets; on **`Left`** bump invalid count (and optionally print).
+- Same logic can be written with a **`var`** and **`foreach`** (still one pass); **`foldLeft`** avoids mutating the summary in **your** code by returning a **new** accumulator each step (immutable style).
+
+### Name
+
+**“Left”** = fold **from the left** (first element first). For commutative sums the direction rarely matters; for ordered or non-commutative combines, use **`foldLeft`** unless you know you need **`foldRight`**.

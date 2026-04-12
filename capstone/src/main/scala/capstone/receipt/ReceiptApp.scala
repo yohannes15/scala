@@ -10,10 +10,14 @@ sealed trait AppError
 case class LineError(msg: String = "error processing line") extends AppError
 case class FileError(msg: String = "error reading file") extends AppError
 
-enum TaxCode:
-  case EXEMPT, STANDARD, REDUCED
+enum TaxCode(val rate: Double):
+  case EXEMPT extends TaxCode(0.00)
+  case STANDARD extends TaxCode(0.1)
+  case REDUCED extends TaxCode(0.05)
 
-case class Receipt(description: String, taxCode: TaxCode, price: BigDecimal)
+case class Receipt(description: String, taxCode: TaxCode, price: BigDecimal):
+  def tax: BigDecimal = 
+    price * taxCode.rate
 
 /** Capstone 1 — boss project (see `capstone/README.md` — Boss project).
   *
