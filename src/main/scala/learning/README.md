@@ -11,6 +11,8 @@ This tree holds **topic-based modules** for learning Scala 3. Each subdirectory 
 | `[domain/](domain/README.md)`                                 | Modeling domains with traits, classes, enums — OOP and FP styles                                 |
 | `[contextualabstractions/](contextualabstractions/README.md)` | `given` / `using`, extensions, type classes, multiversal equality                                |
 | `[concurrency/](concurrency/README.md)`                       | Concurrent programming with `Future` (notes and planned examples)                                |
-| `[static/](static/README.md)`                                 | SVG diagrams (type hierarchy, collections ...)                                                   |
+| `[misc/](misc/Files.scala)`                                  | Small one-offs: e.g. **[`Files.scala`](misc/Files.scala)** — reading paths / lines with **Scala Toolkit** `os` (and line streams) |
+| `[tools/](tools/README.md)`                                   | Ecosystem notes: **Coursier**, **sbt** layout & `build.sbt`, **ScalaTest** — not language syntax   |
+| `[static/](static/README.md)`                                 | SVG diagrams (type hierarchy, collections …)                                                      |
 
 **Entry point:** `learning.fundamentals.hello` — see the comment at the top of `[fundamentals/Basics.scala](fundamentals/Basics.scala)` for how to run it with sbt.
