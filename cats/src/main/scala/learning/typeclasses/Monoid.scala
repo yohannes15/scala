@@ -21,7 +21,7 @@ Strings (with "").
 
 In the `Semigroup` section we had trouble writing a generic `combineAll` function
 because we had nothing to give if the list was empty. With `Monoid` we can return
-`empty`, giving us the below `combineAll`.
+`empty` — see `combineAll` in `Basics.scala`, or use `Monoid.combineAll` from Cats.
 
 Cats defines the `Monoid` type class in cats-kernel. The cats package object defines type
 aliases to the Monoid from cats-kernel, so that you can simply import cats.Monoid.
@@ -29,11 +29,6 @@ aliases to the Monoid from cats-kernel, so that you can simply import cats.Monoi
 
 import cats.{Monoid, Semigroup}
 import cats.syntax.all._
-
-// can be used for any type that has a Monoid instance.
-// This function is provided in Cats as Monoid.combineAll.
-def combineAll[A: Monoid](as: List[A]): A =
-  as.foldLeft(Monoid[A].empty)(Monoid[A].combine)
 
 @main def monoidExample() =
   // an implentation of a Int monoid (available in the cats Monoid implementations)
