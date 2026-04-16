@@ -56,19 +56,27 @@ Set these up once; slow tooling kills momentum.
 
 ## Phase B — Cats → Cats Effect (the spine)
 
-**Goal:** understand **type classes**, **`Functor` / `Monad` / `Applicative`** at *usage* level (not category theory), then **`IO`**, **`Resource`**, **`Fiber`/`Deferred`** at *practical* level.
+**Goal:** get **practical** type-class fluency first (how to *use* `Functor` through `Traverse`, and the core **data types** below), *then* add **`IO`**, **`Resource`**, and basic **concurrency** (`Fiber` / `Deferred`) in Cats Effect. Category theory is optional.
+
+**Cats core spine (read in dependency order, not sidebar A–Z):** **Semigroup → Monoid → Functor → Applicative → Monad → Foldable / Traverse**. Pair with **`Option`**, **`Either`**, and **`Validated`** (accumulating errors; lines up with Applicative). Skim **[Imports](https://typelevel.org/cats/imports.html)** when implicit resolution or syntax gets confusing. **Nested** and monad transformers can wait until the spine feels obvious.
+
+**Official entry:** [Cats — home](https://typelevel.org/cats/) and [Type classes](https://typelevel.org/cats/typeclasses.html) set the scene; drill into each type class’s own page as you go.
+
+**Local notes & runnable snippets:** [`cats/src/main/scala/learning/README.md`](cats/src/main/scala/learning/README.md) (this repo’s Cats topic tree).
 
 ### Phase B — Docs
 
-1. [Cats](https://typelevel.org/cats/) — start with **getting started** and **data types** (`Option`, `Either`, `Validated`, `NonEmptyList`).
-2. [Cats Effect](https://typelevel.org/cats-effect/) — **`IO`**, **`Resource`**, **thread model** (skim), **concurrency** basics.
+1. **[Cats](https://typelevel.org/cats/)** — spine above + data types **`Validated`**, **`Either`**, **`Option`** as you meet them in examples.
+2. **[Cats Effect](https://typelevel.org/cats-effect/)** — after the Cats core spine is comfortable: **`IO`**, **`Resource`**, **thread model** (skim), **concurrency** basics.
 
 ### Phase B — Optional extras
 
 - [Rock the JVM](https://rockthejvm.com/): **Cats** and **Cats Effect** courses (paid; follow the same order as docs).
-- Other free videos on **Cats** and **Cats Effect**. 
+- Other free videos on **Cats** and **Cats Effect**.
 
-**Exit criteria:** write a program that reads config, opens a `Resource` (e.g. file or fake connection), runs `IO`, shuts down cleanly.
+**Exit criteria (Cats core):** you can explain **Functor vs Applicative vs Monad** in one sentence each, and when to prefer **`Validated`** vs **`Either`** for errors; small snippets compile without fighting implicits.
+
+**Exit criteria (Phase B full):** write a program that reads config, opens a `Resource` (e.g. file or fake connection), runs `IO`, shuts down cleanly.
 
 ---
 
