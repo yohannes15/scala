@@ -257,11 +257,11 @@ object ApplicativeExamples:
       Applicative[Option].map2(optB, acc)(_ :: _)
     }
 
-  /** Implementation for Either — you can see there's nothing specific to Option or
-    * Either in the loop body. The implementations of `traverseOption` and
-    * `traverseEither` are more or less identical, except the initial accumulator
-    * to `foldRight`. That difference disappears in `traverse` below by delegating
-    * to `Applicative#pure` for the empty list.
+  /** Implementation for Either — you can see there's nothing specific to Option
+    * or Either in the loop body. The implementations of `traverseOption` and
+    * `traverseEither` are more or less identical, except the initial
+    * accumulator to `foldRight`. That difference disappears in `traverse` below
+    * by delegating to `Applicative#pure` for the empty list.
     */
   def traverseEither[L, A, B](
       as: List[A]
@@ -279,8 +279,8 @@ object ApplicativeExamples:
     * implementing `Applicative` to do so as well. This function is provided by
     * cats via the `Traverse[List]` instance and syntax.
     *
-    * With this addition of traverse, we can now compose any number of independent
-    * effects, statically known or otherwise.
+    * With this addition of traverse, we can now compose any number of
+    * independent effects, statically known or otherwise.
     */
   def traverse[F[_]: Applicative, A, B](as: List[A])(f: A => F[B]): F[List[B]] =
     as.foldRight(Applicative[F].pure(List.empty[B]): F[List[B]]) { (a, acc) =>
@@ -288,6 +288,49 @@ object ApplicativeExamples:
       // Same `map2` + `::`; empty list comes from `pure` so the seed matches any `F`.
       Applicative[F].map2(fb, acc)(_ :: _)
     }
+
+  /** Syntax for Cats' `Applicative` / `Apply` (`Apply` ≈ applicative without
+    * `pure`; see `Apply.scala`) is usually brought in via
+    * `import cats.syntax.all.*` (Scala 3) or `import cats.syntax.all._` — the
+    * old umbrella `cats.implicits._` still exists in some setups, but prefer
+    * explicit `syntax` imports for new code.
+    *
+    * The useful surface matches what we already used (`map3`, `tuple3`, …), but
+    * tuple enrichment lets you write `(fa, fb, fc).mapN(f)` without naming
+    * `Applicative[F]` or baking `3` into the method name. `tupled` on a tuple
+    * of `F`s yields `F` of a tuple.
+    *
+    * *Parallel variants:* `tupled` / `mapN` run left-to-right (sequential where
+    * that matters). `parTupled` / `parMapN` may run in parallel or
+    * indeterminate order; the payoff shows for tasks such as `IO` in Cats
+    * Effect.
+    */
+  def syntaxExamplesProvidedByCat() =
+    import java.sql.Connection
+    import cats.syntax.all.*
+
+    val username: Option[String] = Some("username")
+    val password: Option[String] = Some("password")
+    val url: Option[String] = Some("some.login.url.here")
+
+    // Stub: pretend this can fail internally too (`Option`), like the Cats doc example.
+    def attemptConnect(
+        username: String,
+        password: String,
+        url: String
+    ): Option[Connection] = None
+
+    // Explicit `Applicative` — we have seen this before (`map3`).
+    val viaMap3 =
+      Applicative[Option].map3(username, password, url)(attemptConnect)
+    println(s"map3: $viaMap3") // Option[Option[Connection]] e.g. Some(None)
+
+    // With syntax: `(a, b, c).mapN(f)` — less boilerplate; arity inferred from the tuple.
+    println(s"mapN: ${(username, password, url).mapN(attemptConnect)}")
+
+    // `tupled`: pair up two (or more) effectful values into one effectful tuple.
+    val optPair: Option[(String, String)] = (username, password).tupled
+    println(s"tupled: $optPair")
 
 /** Run: `sbt "cats/runMain learning.typeclasses.applicativeExample"` */
 @main def applicativeExample(): Unit =
@@ -300,6 +343,7 @@ object ApplicativeExamples:
   tryingToComposeTwoEffectfulValuesWithMap()
   applicativesCompose()
   composeNDifferentEffects()
+  syntaxExamplesProvidedByCat()
   println(traverseOption(List(1, 2, 3))(i => Some(i): Option[Int]))
   println(
     traverseEither(List(1, 2, 3))(i =>
