@@ -6,24 +6,24 @@ Algebraic Data Types (ADTs)
 ------------------------------------
 The enum concept is general enough to also support ADTs and their
 generalized versions (GADTs). Below is an example that shows how an
-`Option` type can be represented as an ADT.
+`Option`-like type can be represented as an ADT (`OptionAdt`).
 
 Example creates:
-- an Option enum with a covariant type parameter `T` consisting of
-  two cases, `Some` and `None`
+- an `OptionAdt` enum (named to avoid clashing with `scala.Option` in this package)
+  with a covariant type parameter `T` consisting of two cases, `Some` and `None`
 - `Some` is parameterized with a value parameter x: T. This is
-  shorthand for writing a `case` class that extends Option
+  shorthand for writing a `case` class that extends OptionAdt
 - `None` is not parameterized, treated as a normal `enum` value
 
 **********************************************************************
 **********************************************************************/
 
-// +T = covariant: Option[String] is a subtype of Option[Any]
-enum Option[+T]:
-    // Shorthand for: case class Some(x: T) extends Option[T]
+// +T = covariant: OptionAdt[String] is a subtype of OptionAdt[Any]
+enum OptionAdt[+T]:
+    // Shorthand for: case class Some(x: T) extends OptionAdt[T]
     case Some(x: T)
-    // Singleton with no fields. Inferred as: case object None extends Option[Nothing]
-    // Option[Nothing] is a subtype of Option[T] for any T, due to covariance
+    // Singleton with no fields. Inferred as: case object None extends OptionAdt[Nothing]
+    // OptionAdt[Nothing] is a subtype of OptionAdt[T] for any T, due to covariance
     case None
 
     // Pattern match on `this` is exhaustive — the compiler knows all cases
@@ -31,21 +31,21 @@ enum Option[+T]:
         case None    => false
         case Some(_) => true
 
-object Option:
+object OptionAdt:
     // Smart constructor: wraps non-null values in Some, maps null to None
     // T >: Null constrains T to be a nullable (reference) type
-    def apply[T >: Null](x: T): Option[T] =
-        if (x == null) None else Some(x)
+    def apply[T >: Null](x: T): OptionAdt[T] =
+        if (x == null) OptionAdt.None else OptionAdt.Some(x)
 
 /* long hand version — extends is optional
-enum Option[+T]:
-    case Some(x: T) extends Option[T]
-    case None extends Option[Nothing]
+enum OptionAdt[+T]:
+    case Some(x: T) extends OptionAdt[T]
+    case None extends OptionAdt[Nothing]
 */
 
 def optionAsEnumExample() =
-    val res1: Option[String]  = Option.Some("Hello")
-    val res2: Option[Nothing] = Option.None
+    val res1: OptionAdt[String]  = OptionAdt.Some("Hello")
+    val res2: OptionAdt[Nothing] = OptionAdt.None
     println(res1) // Some(Hello)
     println(res2) // None
 
@@ -114,9 +114,9 @@ def adtExample() =
         case Zero    => 0
         case Succ(n) => 1 + natToInt(n)
 
-    def listHead[A](l: MyList[A]): Option[A] = l match
-        case Nil        => Option.None
-        case Cons(h, _) => Option.Some(h)
+    def listHead[A](l: MyList[A]): OptionAdt[A] = l match
+        case Nil        => OptionAdt.None
+        case Cons(h, _) => OptionAdt.Some(h)
 
     println(natToInt(three))   // 3
     println(listHead(nums))    // Some(1)

@@ -1,11 +1,10 @@
 package learning.types
 
-// Opaque Types
+/* Opaque Types
 
-// `Opaque type` aliases provide type abstraction without any overhead.
-// In Scala 2, similar result can be achieved using value classes
+`Opaque type` aliases provide type abstraction without any overhead.
+In Scala 2, similar result can be achieved using value classes.
 
-/* 
 Abstraction Overhead
 - Lets assume we want to define a module that offers arithmetic on numbers
   which are represented by their logarithm. This can be useful to improve
@@ -129,6 +128,26 @@ Opaque Types
   free: Since there is only one implementation, at runtime there will 
   be no boxing overhead for primitive types like Double.
 - They integrate very well with the Extension methods
+#######################################################################
+- Opaque types are a Scala 3 feature that decouple the representation of 
+  a type from the set of allowed operations on that type.
+  In simpler words, they allow us to create a type (e.g. a `Logarithm`) 
+  that has the same runtime representation as another type (e.g. a `Double`),
+  but is distinct from that type in all other ways.
+- Opaque types divide our code base into two distinct parts: where our type is
+  transparent, which is where we know the underlying representation, and the 
+  remainder where it is opaque. The rule is pretty simple: an opaque type is 
+  transparent within the scope in which it is defined, so within an enclosing 
+  object or class. If there is no enclosing scope, as in the example above, it 
+  is transparent only within the file in which it is defined. Everywhere else 
+  it is opaque.
+- Opaque types can have type parameters and type bounds.
+- Opaque types aren't appropriate for the following use cases:
+  1) When the data requires more structure than we can represent with an opaque type.
+     e.g two dimensional points, which require two coordinates. ADTs better suited.
+  2) When we need to reimplement one of the methods, most commonly 'toString', that
+     opaque types cannot override.
+     e.g types representing PII can't be accidentally logged. Overriding toString helps.
 **********************************************************************
 **********************************************************************/
 
@@ -175,8 +194,51 @@ object Logarithms:
         def * (y: Logarithm): Logarithm = x + y
 
 
-def opaqueTypeExample() =
+/* 
+A simple example of using an Option to represent two different
+types of database columns: 
+  - nullable columns, where None mean to set the column to null, and 
+  - non-nullable, where None means to keep the existing value. 
+We can define these as opaque types with a type parameter.
+nullable and non-nullable are subtypes so we have access to the Option methods.
+*/
+object OpaqueTypeNilableNonNullableExample:
+  // <: means subtype, + means covariant, type used in return position only
+  opaque type Nilable[+A] <: Option[A] = Option[A]
+  object Nilable:
+    def apply[A](a: A): Nilable[A] = Some(a)
+    def fromOption[A](option: Option[A]): Nilable[A] = option
+    val nil: Nilable[Nothing] = None
+
+  opaque type Default[+A] <: Option[A] = Option[A]
+  object Default:
+    def apply[A](value: A): Default[A] = Some(value)
+    def fromOption[A](option: Option[A]): Default[A] = option
+    val default: Default[Nothing] = None
+  
+object OpaqueTypeEmailAddressExample:
+  opaque type EmailAddress = String
+  object EmailAddress:
+    def apply(email: String): Option[EmailAddress] =
+      val idx = email.indexOf('@')
+      if idx != -1 && email.lastIndexOf('@') == idx
+      then Some(email)
+      else None
+
+    /* unsafe version of apply without validation (this is a way to do it) 
+    e.g: loading email addresses from a list that is known to be good, 
+    so we can skip validation.
+    */
+    def unsafeApply(email: String): EmailAddress = email
+
+    /* almost certainly we need to convert from our opaque type back to its
+    underlying type at some point. Conventions are usually to have a to{Type}
+    method. */
+    def toString(email: EmailAddress): String = email
+
+@main def opaqueTypeExamples() =
     import Logarithms.*
+    import OpaqueTypeNilableNonNullableExample.{Nilable, Default}
 
     // Logarithm(2.0) desugars to Logarithm.apply(2.0)
     // apply calls math.log(2.0) ≈ 0.693 and returns that as a Logarithm
@@ -194,3 +256,20 @@ def opaqueTypeExample() =
     // Outside Logarithms, the compiler sees Logarithm and Double as different types.
     // val d: Double = log2  // ERROR: Found Logarithm, required Double
     // This is the whole point of opaque types — the abstraction is enforced by the type system.
+
+    // Nilable / Default: both <: Option[A], so Option methods (e.g. map, isEmpty) are available.
+    val nullableName: Nilable[String] = Nilable("Ada")
+    val nullableAbsent: Nilable[Int] = Nilable.nil // None: e.g. "set column to SQL NULL"
+    val nullableAbsentFromOption: Nilable[Int] = Nilable.fromOption(Some(7)) // Some(7)
+    println(s"Nilable present map: ${nullableName.map(_.length)}") // Some(3)
+    println(s"Nilable absent isEmpty: ${nullableAbsent.isEmpty}") // true
+    println(s"Nilable fromOption: ${nullableAbsentFromOption}") // Some(7)
+
+    val withDefault: Default[String] = Default("fallback")
+    val keepExisting: Default[String] = Default.default // None: e.g. "leave column unchanged"
+    val keepExistingFromOption: Default[String] = Default.fromOption(Some("fallback")) // Some(fallback)
+    val keepExistingFromOptionNone: Default[String] = Default.fromOption(None) // None
+    println(s"Default with value map: ${withDefault.map(_.toUpperCase)}") // Some(FALLBACK)
+    println(s"Default keep-existing isEmpty: ${keepExisting.isEmpty}") // true
+    println(s"Default fromOption(None): ${keepExistingFromOption}") // Some(fallback)
+    println(s"Default fromOption(None): ${keepExistingFromOptionNone}") // None

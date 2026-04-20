@@ -41,7 +41,6 @@ import learning.types.{
   contravariantExample,
   opaqueTypescala2abstractionOverhead,
   leakyAbstractionscala2Example,
-  opaqueTypeExample,
   structuralTypeExample,
   structuralTypeExample2
 }
@@ -204,7 +203,6 @@ def hello(name: String): Unit =
   // contravariantExample()
   // opaqueTypescala2abstractionOverhead()
   // leakyAbstractionscala2Example()
-  // opaqueTypeExample()
   // structuralTypeExample()
   // structuralTypeExample2()
 

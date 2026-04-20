@@ -4,7 +4,7 @@ package learning.types
 *******************************************************************
 Generalized Algebraic Datatypes (GADTs)
 -------------------------------------------------------------------
-A regular ADT (like Option[T]) has a type parameter T that is left
+A regular ADT (like OptionAdt[T]) has a type parameter T that is left
 open — the caller decides what T is, and all cases share that same T.
 
 A GADT goes further: each case can FIX T to a specific concrete type
