@@ -1,3 +1,2 @@
 Data types:
 1. Validated (** Important **)
-2. Const
