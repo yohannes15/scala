@@ -127,6 +127,3 @@ object LearningFibers extends IOApp.Simple:
         done
     */
 
-
-@main def fibers() =
-  LearningFibers.stepInAFiberIsAnEffect() 
