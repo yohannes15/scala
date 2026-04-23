@@ -115,7 +115,60 @@ sbt new scala/scala3.g8
 | `sbt updateClassifiers`          | Download `-sources.jar` for all dependencies (enables go-to-definition in IDE) |
 | `sbt "runMain com.example.Main"` | Run a specific main class                                                      |
 | `sbt "project foo"`              | Switch to subproject `foo` in a multi-project build                            |
+| `sbt foo/console`                | Start the Scala REPL with subproject `foo`’s classpath (one-shot from the shell) |
+| `sbt foo/run`                    | Run the main class in subproject `foo`                                         |
+| `sbt "foo/runMain pkg.Main"`     | Run a specific main class in subproject `foo`                                    |
 
+
+### Multi-project: switching vs scoped commands
+
+You can either **change the active project** inside sbt or **prefix tasks** with the project id.
+
+**Inside an interactive sbt session** (after `sbt`):
+
+```text
+sbt:scala-tutorial> project cats
+[info] set current project to learning-cats (...)
+sbt:learning-cats> compile
+sbt:learning-cats> console
+```
+
+**From your normal shell** (no need to `project` first): put `<project>/` before the task:
+
+```bash
+sbt cats/compile
+sbt cats/console
+sbt cats/run
+sbt "cats/runMain learning.effect.HelloWorld"
+```
+
+The first token must be a **task** (e.g. `cats/console`), not a nested `sbt` command — commands like `sbt cats/console` are only valid **outside** sbt; inside sbt, use `project cats` then `console`.
+
+### REPL (`console`) and dependency classpath
+
+Each subproject has its **own** `libraryDependencies`. This repo’s default project is **`root`** (`scala-tutorial`); it does **not** pull in Cats or cats-effect. If you open `console` on `root`, imports like `cats.effect.IO` fail with “Not found”.
+
+Use the module that declares those deps — here, **`cats`**:
+
+```bash
+sbt cats/console
+```
+
+Then you can use e.g. `cats.effect.IO` (and optional `cats.effect.unsafe.implicits._` if you deliberately run effects in the REPL).
+
+### Scala 3.8 and sbt version (`console`)
+
+From Scala **3.8** onward, the REPL is shipped as **separate JARs** from the compiler. **sbt 1.10.x** still loads the REPL the old way, which often crashes `console` with:
+
+`java.lang.NoClassDefFoundError: dotty/tools/repl/ReplDriver`
+
+**Fix:** use **sbt 1.12 or newer** in `project/build.properties` (this repo pins a 1.12.x line for that reason). Upgrading sbt is the straightforward fix; alternatives include `scala-cli` for a standalone REPL or staying on Scala 3.7.x with an older sbt.
+
+### Cats Effect (`IOApp`) and `run` in this repo
+
+The **`cats`** subproject sets **`Compile / run / fork := true`**. That starts **`run` / `runMain` in a separate JVM**, which matches a normal `java` launch and avoids Cats Effect’s warning about `IOApp` running on a thread that isn’t the real process main thread (common when `fork` is false inside an interactive sbt session).
+
+That setting applies only to **`run` / `runMain`** for that subproject — not to `compile`, `test`, or `console`.
 
 ---
 

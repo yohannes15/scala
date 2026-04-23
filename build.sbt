@@ -43,16 +43,25 @@ lazy val root = (project in file("."))
 lazy val cats = (project in file("cats"))
   .settings(
     name := "learning-cats",
+    // starts a separate JVM
+    Compile / run / fork := true,
     // Lets `Nested[Option, Validated[String, *], Int]` match the Cats Nested docs notation.
     scalacOptions ++= Seq(
       "-Xkind-projector",
       "-Wnonunit-statement" // warn on pure expressions as statements (e.g. unused `IO`)
     ),
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.2.20" % Test,
       "org.scala-lang" %% "toolkit" % "0.1.7",
       "org.typelevel" %% "cats-core" % "2.13.0",
-      "org.typelevel" %% "cats-effect" % "3.7.0"
+      // "core" module - IO, IOApp, schedulers
+      // This pulls in the kernel and std modules automatically.
+      "org.typelevel" %% "cats-effect" % "3.7.0",
+      // concurrency abstractions and primitives (Concurrent, Sync, Async etc.)
+      "org.typelevel" %% "cats-effect-kernel" % "3.5.3",
+      // standard "effect" library (Queues, Console, Random etc.)
+      "org.typelevel" %% "cats-effect-std" % "3.5.3",
+      // Tests: MUnit + cats-effect (`munit` comes in transitively).
+      "org.typelevel" %% "munit-cats-effect" % "2.2.0" % Test
     )
   )
 
