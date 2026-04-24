@@ -28,6 +28,10 @@ import cats.effect.IO
  * / *Sync / *Cancelable run paths depending on version). Effectful results are not
  * memoized, meaning that memory overhead is minimal (and no leaks), and also that a single effect 
  * may be run multiple times in a referentially-transparent manner.
+ * 
+ * Errors can occur, but when working with any IO those should be embedded in the IO instance.
+ * That is, no exception is raised outside the IO and so no try (or the like) needs to be used,
+ * instead the IO evaluation will fail and the IO instance will carry the error raised.
 */
 
 object LearningIO extends IOApp.Simple:
