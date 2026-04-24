@@ -1,26 +1,30 @@
+# Build context is repo root. Image: docker/scala-sbt-neovim/Dockerfile
+#
 # Dev container + CLI:  docker compose up -d
-# Shell in dev:         docker compose exec dev bash
+# Shell:                docker compose exec dev bash
+# Neovim:               docker compose exec dev nvim
+#
+# Named sbt/ivy/coursier volumes below: keep as-is for devcontainer up (postStart/postCreate chown
+# in .devcontainer fixes root-owned volume perms). If you use only docker compose (no devcontainer),
+# comment out those three lines and the root `volumes:` block so caches live in the container layer
+# instead—then you do not get ~/.ivy2 permission errors. Uncomment them again when using devcontainer.
 
 services:
   dev:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/scala-sbt-neovim/Dockerfile
     container_name: scala-learning-dev
     working_dir: /workspaces
     command: sleep infinity
     volumes:
-      # Your repo on the host (edits here = what the container sees)
       - .:/workspaces:cached
-      # sbt global dir: boot, global plugins, launcher state — speeds up sbt after restarts
       - sbt-sbt:/home/sbtuser/.sbt
-      # Legacy Ivy cache; some tooling still writes here — optional but cheap to persist
       - sbt-ivy2:/home/sbtuser/.ivy2
-      # Where modern sbt keeps most downloaded dependencies (Coursier) — biggest win for repeat runs
       - sbt-coursier:/home/sbtuser/.cache/coursier
+      - ${HOME}/.config/nvim:/home/sbtuser/.config/nvim:cached
     ports:
       - "8080:8080"
-    user: sbtuser
 
 volumes:
   sbt-sbt:

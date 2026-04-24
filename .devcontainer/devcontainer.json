@@ -19,6 +19,7 @@
     }
   },
   "forwardPorts": [8080],
-  "postCreateCommand": "java -version && sbt sbtVersion",
+  "postStartCommand": "sudo chown -R sbtuser:sbtuser /home/sbtuser/.sbt /home/sbtuser/.ivy2 /home/sbtuser/.cache",
+  "postCreateCommand": "sudo chown -R sbtuser:sbtuser /home/sbtuser/.sbt /home/sbtuser/.ivy2 /home/sbtuser/.cache && java -version && sbt sbtVersion",
   "remoteUser": "sbtuser"
 }
