@@ -1,14 +1,15 @@
 {
   "name": "Scala (sbt + Metals)",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": ".."
-  },
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
+  "service": "dev",
+  "workspaceFolder": "/workspaces",
+  "overrideCommand": true,
   "customizations": {
     "vscode": {
       "extensions": [
-        "scalameta.metals",
-        "streetsidesoftware.code-spell-checker"
+        "scalameta.metals"
       ],
       "settings": {
         "files.watcherExclude": {
