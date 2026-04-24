@@ -5,6 +5,11 @@ import cats.effect.IOApp
 import scala.concurrent.duration._
 
 
+trait Fiber[F[_], A] {
+  def cancel: F[Unit]
+  def join: F[A]
+}
+
 /** 
 `Fibers`
 -------------------------------------------------------------------------------------
@@ -139,8 +144,8 @@ which make cancelation considerably more robust, more reliable, and much safer.
 */
 object LearningFibers extends IOApp.Simple:
   def run: IO[Unit] =
-    stepInAFiberIsAnEffect() >> fibersAreCancellable()
-
+    stepInAFiberIsAnEffect() >> IO(println("*************")) >>
+    anotherFiberExample().flatMap(x => IO.println(s"outcome: $x"))
   /* 
     All of below are fibers; rather, they are definitions of part of a fiber,
     much like a pair of statements defines part of a thread. IO.println
@@ -156,6 +161,7 @@ object LearningFibers extends IOApp.Simple:
       a.flatMap(f)        == a flatMap f
     */
     val res: IO[Unit] = IO.println("Hi") flatMap { _ => IO.println("John")}
+    // val fiber: IO[Fiber[IO, Throwable, Unit]] = res.start
 
     /* quite common to use for-comprehensions to express the same thing: */
     val res2: IO[Unit] = for
@@ -204,7 +210,18 @@ object LearningFibers extends IOApp.Simple:
     */
   def fibersAreCancellable() = 
     lazy val loop: IO[Unit] = IO.println("Yooo!") >> loop
-    loop.timeout(3.seconds)   // => IO[Unit]
+    loop.timeout(0.5.seconds)   // => IO[Unit]
+
+  def anotherFiberExample() = 
+    val launchMissiles: IO[Unit] = IO.raiseError(new Exception("boom!"))
+    val runToBunker = IO(println("To the bunker!!!"))
+
+    for 
+      fiber <- launchMissiles.start
+      // Retreat failed, cancel launch (maybe we should have retreated to our bunker before the launch?)
+      _ <- runToBunker.handleErrorWith(error => fiber.cancel >> IO.raiseError(error))
+      aftermath <- fiber.join
+    yield aftermath
 
       
 
