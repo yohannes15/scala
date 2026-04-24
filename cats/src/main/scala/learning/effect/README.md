@@ -52,3 +52,17 @@ Rough analogues (each differs in API and guarantees):
 These stacks are **not** interchangeable: features like **cooperative cancellation**, a fiber-aware scheduler, and **production-oriented tracing** line up with Cats Effect in different ways than in older callback or `Future`-centric setups.
 
 Still, the role is similar: a **foundation layer** for scalable async and parallel programs on the JVM and JavaScript.
+
+## Note
+
+As you gain more experience with cats-effect, you will probably find your own solutions to deal with the problems presented here. Also, bear in mind that using cats-effect for copying files or implementing basic concurrency patterns (such as the producer-consumer problem) is suitable for a 'getting things done' approach, but for more complex systems/settings/requirements you might want to take a look at [fs2](https://fs2.io/) or [Monix](https://monix.io/) to find powerful network and file abstractions that integrate with cats-effect.
+
+## Further Reading
+
+- [Cats Effect — home](https://typelevel.org/cats-effect/docs/tutorial)
+- [Extra Resources](https://typelevel.org/cats-effect/resources.html)
+
+## Advanced Reading
+
+- [Fs2 — home](https://fs2.io/) - purely functional streaming library
+- [Monix — home](https://monix.io/) - purely functional reactive programming library
