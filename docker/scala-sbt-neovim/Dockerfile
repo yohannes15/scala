@@ -32,12 +32,10 @@ RUN arch="$(uname -m)" && \
   rm -f /tmp/ts.gz && \
   chmod +x /usr/local/bin/tree-sitter
 
-# Coursier + Metals (not available via Mason; needed for Neovim LSP)
+# Coursier (needed for nvim-metals to install/manage Metals itself)
 # arm64 + amd64: both launchers are published for this Coursier tag.
 ARG COURSIER_VERSION=v2.1.25-M24
-USER sbtuser
-WORKDIR /home/sbtuser
-ENV PATH="/home/sbtuser/.local/share/coursier/bin:/usr/local/bin:/usr/bin:/bin"
+USER root
 RUN set -eux; \
   arch="$(uname -m)"; \
   case "$arch" in \
@@ -45,12 +43,13 @@ RUN set -eux; \
     aarch64) cspkg=cs-aarch64-pc-linux ;; \
     *) echo "unsupported arch for Coursier: $arch" >&2; exit 1 ;; \
   esac; \
-  curl -fL "https://github.com/coursier/coursier/releases/download/${COURSIER_VERSION}/${cspkg}.gz" | gunzip -c > /tmp/cs; \
-  chmod +x /tmp/cs; \
-  /tmp/cs install metals; \
-  /tmp/cs version; \
-  command -v metals; \
-  metals -version; \
-  rm -f /tmp/cs
+  curl -fL "https://github.com/coursier/coursier/releases/download/${COURSIER_VERSION}/${cspkg}.gz" | gunzip -c > /usr/local/bin/cs; \
+  chmod +x /usr/local/bin/cs; \
+  cs version; \
+  command -v cs
+
+USER sbtuser
+WORKDIR /home/sbtuser
+ENV PATH="/home/sbtuser/.local/share/coursier/bin:/usr/local/bin:/usr/bin:/bin"
 
 WORKDIR /workspaces
