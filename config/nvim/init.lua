@@ -174,7 +174,9 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
 vim.diagnostic.config {
-  update_in_insert = false,
+  -- true: show/refresh LSP errors while in Insert (Metals + Scala need this to feel "live")
+  -- false: quieter; diagnostics refresh when you leave Insert
+  update_in_insert = true,
   severity_sort = true,
   float = { border = 'rounded', source = 'if_many' },
   underline = { severity = { min = vim.diagnostic.severity.WARN } },
@@ -357,7 +359,10 @@ require('lazy').setup({
         -- installed and loaded.
         cond = function() return vim.fn.executable 'make' == 1 end,
       },
-      { 'nvim-telescope/telescope-ui-select.nvim' },
+      -- telescope-ui-select.nvim REPLACES vim.ui.select with a fuzzy `>` prompt (Insert mode).
+      -- That breaks many LSP/METALS prompts (Scalafmt, etc.): j/k move the file buffer, not the list.
+      -- Use Neovim's default vim.ui.select instead (numbered list, 1/2/3 + Enter works).
+      -- { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
@@ -394,14 +399,11 @@ require('lazy').setup({
         --   },
         -- },
         -- pickers = {}
-        extensions = {
-          ['ui-select'] = { require('telescope.themes').get_dropdown() },
-        },
       }
 
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
-      pcall(require('telescope').load_extension, 'ui-select')
+      -- pcall(require('telescope').load_extension, 'ui-select') -- disabled: see dependency note above
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
