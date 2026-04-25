@@ -9,7 +9,7 @@
 
 ThisBuild / scalaVersion := "3.8.2"
 ThisBuild / organization := "learning.local"
-ThisBuild / version      := "0.1.0-SNAPSHOT"
+ThisBuild / version := "0.1.0-SNAPSHOT"
 
 // `capstone` is its own subproject (own target/, deps, run). It does not depend on `root`
 // and `root` does not aggregate it — compile each explicitly: `sbt compile` vs `sbt capstone/compile`.

@@ -48,22 +48,22 @@ Type Casting
  */
 
 def instancesOfAnyExample(): Unit =
-    val list: List[Any] = List(
-        "a string",
-        732,
-        'c',
-        true,
-        () => "an anonymous function returning a string"
-    )
-    list.foreach(element => println(element))
+  val list: List[Any] = List(
+    "a string",
+    732,
+    'c',
+    true,
+    () => "an anonymous function returning a string"
+  )
+  list.foreach(element => println(element))
 
 def typeCastExample(): Unit =
-    val b: Byte = 127
-    val i: Int  = b // implicit widening: 127
+  val b: Byte = 127
+  val i: Int = b // implicit widening: 127
 
-    val face: Char = '☺'
-    val number: Int = face // 9786
+  val face: Char = '☺'
+  val number: Int = face // 9786
 
-    // val x: Long = 987654321
-    // val y: Float = x.toFloat  // 9.8765434E8 (precision loss — .toFloat required)
-    // val z: Long = y            // error: no implicit cast from Float to Long
+  // val x: Long = 987654321
+  // val y: Float = x.toFloat  // 9.8765434E8 (precision loss — .toFloat required)
+  // val z: Long = y            // error: no implicit cast from Float to Long

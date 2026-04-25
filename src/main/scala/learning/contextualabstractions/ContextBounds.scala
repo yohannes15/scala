@@ -1,23 +1,23 @@
 package learning.contextualabstractions
 import scala.math.*
 
-/* 
+/*
 In many cases, the name of a context parameter doesn't have to be
 mentioned explicitly, since it is only used by the compiler in
-synthesized arguments for other context parameters. 
+synthesized arguments for other context parameters.
 
 In that case you don't have to define a parameter name, and can just
 provide the parameter type. For example, consider a method maxElement
 that returns the maximum value in a collection.
 
-The method maxElement takes a context parameter of type Ord[A] 
-only to pass it on as an argument to the method max. Note that the 
+The method maxElement takes a context parameter of type Ord[A]
+only to pass it on as an argument to the method max. Note that the
 method max takes a context parameter of type Ord[A], like the method
-maxElement. 
+maxElement.
 
-Note that in practice we would use the existing method max on List, 
+Note that in practice we would use the existing method max on List,
 but we made up this example for illustration purpose
-*/
+ */
 
 /** Defines how to compare values of type `A` */
 trait Ord[A]:
@@ -60,13 +60,13 @@ def max[A](a1: A, a2: A)(using ord: Ord[A]): A =
 def maxElementUgly[A](as: List[A])(using ord: Ord[A]): A =
   as.reduceLeft(max(_, _)(using ord))
 
-/* 
-Since `ord` is a context parameter in the method max, the compiler 
-can supply it for us in the implementation of maxElement, when we call 
+/*
+Since `ord` is a context parameter in the method max, the compiler
+can supply it for us in the implementation of maxElement, when we call
 the method max
 
 Note that, because we don't need to explicitly pass it to the method max,
-we can leave out its name in the definition of the method maxElement. 
+we can leave out its name in the definition of the method maxElement.
 This is an anonymous context parameter.
  */
 
@@ -75,28 +75,26 @@ This is an anonymous context parameter.
 def maxElementBetter[A](as: List[A])(using Ord[A]): A =
   as.reduceLeft(max(_, _))
 
-/***************************************************************
-Context bounds
-****************************************************************
-
-Given the above background, a context bound is a shorthand syntax 
-for expressing the pattern of:
-    - "a context parameter applied to a type parameter."
-
-Using a context bound, the maxElement method can be written succinct
-as below. 
-
-A bound like `: Ord` on a type parameter A of a method or class 
-indicates a context parameter with type Ord[A]. Under the hood, 
-the compiler transforms this syntax into `def maxElementUgly`.
-
-So all three definitions are equivalent — each is just a more
-concise way of writing the same thing:
-
-    maxElementUgly[A](as)(using ord: Ord[A])   // named, explicit
-    maxElementBetter[A](as)(using Ord[A])       // anonymous using
-    maxElement[A: Ord](as)                      // context bound (shortest)
- */
+/** ************************************************************* Context bounds
+  *
+  * Given the above background, a context bound is a shorthand syntax for
+  * expressing the pattern of:
+  *   - "a context parameter applied to a type parameter."
+  *
+  * Using a context bound, the maxElement method can be written succinct as
+  * below.
+  *
+  * A bound like `: Ord` on a type parameter A of a method or class indicates a
+  * context parameter with type Ord[A]. Under the hood, the compiler transforms
+  * this syntax into `def maxElementUgly`.
+  *
+  * So all three definitions are equivalent — each is just a more concise way of
+  * writing the same thing:
+  *
+  * maxElementUgly[A](as)(using ord: Ord[A]) // named, explicit
+  * maxElementBetter[A](as)(using Ord[A]) // anonymous using maxElement[A:
+  * Ord](as) // context bound (shortest)
+  */
 
 // Version 3: context bound — [A: Ord] is the shortest form.
 // The compiler rewrites [A: Ord] to (using Ord[A]) automatically.
@@ -105,16 +103,16 @@ def maxElement[A: Ord](as: List[A]): A =
 
 def contextBoundsExample() =
   // The compiler finds `intOrd` and `stringOrd` automatically
-  println(maxElement(List(3, 1, 4, 1, 5, 9, 2)))        // 9
+  println(maxElement(List(3, 1, 4, 1, 5, 9, 2))) // 9
   println(maxElement(List("banana", "apple", "cherry"))) // cherry
 
   // All three versions produce the same result
   val ints = List(10, 3, 7)
-  println(maxElementUgly(ints))   // 10 — named, explicit forwarding
+  println(maxElementUgly(ints)) // 10 — named, explicit forwarding
   println(maxElementBetter(ints)) // 10 — anonymous using
-  println(maxElement(ints))       // 10 — context bound shorthand
+  println(maxElement(ints)) // 10 — context bound shorthand
 
-/* 
+/*
 Typing Shorthands / Shortcuts (SUPERNOTE)
 
 [A]                     // plain type parameter — unconstrained
@@ -131,4 +129,4 @@ The way to read [A: Ord] out loud is:
   "A, with a context bound of Ord"
 which the compiler rewrites to:
   "A, with an implicit using Ord[A] parameter"
-*/
+ */

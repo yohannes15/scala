@@ -4,7 +4,7 @@ import scala.compiletime.ops.string
 
 // introduction to domain modeling using object-oriented programming (OOP) in Scala 3.
 
-/* 
+/*
 Scala provides all the necessary tools for object-oriented design:
 ------
 `Traits`
@@ -21,7 +21,7 @@ Scala provides all the necessary tools for object-oriented design:
 `Access modifiers` lets you control which members of a class can be accessed by which part of the code.
  */
 
-/* 
+/*
  Ways to get a value whose type is a trait (a trait itself is not “constructed”
  with `new` until every abstract member has an implementation):
 
@@ -38,23 +38,22 @@ Scala provides all the necessary tools for object-oriented design:
  refinement on a concrete trait).
  */
 
-/*******************************************************************
- Traits
-******************************************************************/
+/** ***************************************************************** Traits
+  */
 
 trait Showable:
-    def show: String // abstract
-    /* 
-    show has no body here—it’s abstract. Each concrete type that extends Showable 
+  def show: String // abstract
+  /*
+    show has no body here—it’s abstract. Each concrete type that extends Showable
     must supply what show returns (e.g. a plain string).
-     */
-    def showHtml: String = "<p>" + show + "</p>" // concrete implementations
-    /* 
-    showHtml does have a body. That body uses show: it concatenates "<p>", 
+   */
+  def showHtml: String = "<p>" + show + "</p>" // concrete implementations
+  /*
+    showHtml does have a body. That body uses show: it concatenates "<p>",
     whatever show returns, and "</p>".
-     */
+   */
 
-/* 
+/*
  Odersky and Zenger describe `traits` as components in composition. They use a
  "service-oriented" vocabulary (not HTTP or microservices):
 
@@ -71,9 +70,9 @@ trait Showable:
  */
 
 class Document(text: String) extends Showable:
-    def show = text
+  def show = text
 
-/* 
+/*
  Abstract methods are not the only thing that can be left abstract in a trait.
     - abstract methods              =   def m(): T
     - abstract value                =   val x: T
@@ -88,16 +87,15 @@ the implementor of the trait.
 trait Greeting:
   def sayHello(name: String): Unit
 
-// Instantiating with implementation / Anonymous Class Instantiation 
+// Instantiating with implementation / Anonymous Class Instantiation
 val greeter = new Greeting:
   def sayHello(name: String): Unit = println(s"Hello, $name!")
 
+/** ***************************************************************** Mixin
+  * Composition
+  */
 
-/*******************************************************************
- Mixin Composition
-******************************************************************/
-
-/* 
+/*
  Mixin composition: merge several traits into one type with multiple parents
  (e.g. `extends GreetingService, TranslationService`). Scala combines inherited
  members via linearization (trait order matters if members conflict).
@@ -124,31 +122,32 @@ val greeter = new Greeting:
  */
 
 trait GreetingService:
-    def translate(text: String): String
-    def sayHello = translate("Hello")
+  def translate(text: String): String
+  def sayHello = translate("Hello")
 
 trait TranslationService:
-    def translate(text: String): String = "..."
+  def translate(text: String): String = "..."
 
 // To compose the two services, we can simply create a new trait extending them
 trait ComposedService extends GreetingService, TranslationService
 
 def mixinCompositionExample(): Unit =
-    val svc = new ComposedService {}
-    println(s"sayHello -> ${svc.sayHello}, translate('Hi') -> ${svc.translate("Hi")}")
+  val svc = new ComposedService {}
+  println(
+    s"sayHello -> ${svc.sayHello}, translate('Hi') -> ${svc.translate("Hi")}"
+  )
 
-    greeter.sayHello("World")
+  greeter.sayHello("World")
 
-/*******************************************************************
- Classes
-******************************************************************/
+/** ***************************************************************** Classes
+  */
 
-/* 
-When designing software in Scala, it’s often helpful to only consider using classes 
+/*
+When designing software in Scala, it’s often helpful to only consider using classes
 at the leafs of your inheritance model:
 
     Traits 	            T1, T2, T3
-    Composed traits 	S1 extends T1, T2, 
+    Composed traits 	S1 extends T1, T2,
                         S2 extends T2, T3
     Classes 	        C extends S1, T3
     Instances 	        C()
@@ -160,14 +159,14 @@ class MyService(name: String) extends ComposedService, Showable:
   def show = s"$name says $sayHello"
 
 // As mentioned before, it is possible to extend another class:
-// However, since traits are designed as the primary means of decomposition, 
+// However, since traits are designed as the primary means of decomposition,
 // it is not recommended to extend a class that is defined in one file from another file.
 
 class Worker(name: String)
 class SoftwareDeveloper(name: String, favoriteLang: String) extends Worker(name)
 
-/* 
-In Scala 3 extending non-abstract classes in other files is restricted. 
+/*
+In Scala 3 extending non-abstract classes in other files is restricted.
 
 Marking classes with `open` is a new feature of Scala 3. Having to explicitly mark classes as `open`
 avoids many common pitfalls in OO design. In particular, it requires library designers to explicitly
@@ -178,28 +177,28 @@ extension contracts.
 open class OpenWorker(name: String)
 
 def classExample() =
-    // instance
-    val s1: MyService = MyService("Service 1")
-    /* 
-     Subtyping: 
-    - `MyService` extends `ComposedService` (which extends `GreetingService` and `TranslationService`) and 
-      `Showable`, so value (`s1`) is a `GreetingService`, a `TranslationService`, and a `Showable`. 
+  // instance
+  val s1: MyService = MyService("Service 1")
+  /*
+     Subtyping:
+    - `MyService` extends `ComposedService` (which extends `GreetingService` and `TranslationService`) and
+      `Showable`, so value (`s1`) is a `GreetingService`, a `TranslationService`, and a `Showable`.
        The same object can be used where any supertype is expected.
-       Assignments below are safe upcasts: same object in memory; each `val` only exposes members of its declared type 
+       Assignments below are safe upcasts: same object in memory; each `val` only exposes members of its declared type
        (e.g. `s4` has `show` / `showHtml`, not `translate`; use `s1` or a narrower type to call those).
-     */
-    val s2: GreetingService = s1
-    // above statement does not copy the object. It only says: “treat this value as a GreetingService.” 
-    // The compiler checks that MyService is a subtype of GreetingService (it is), so the assignment is allowed.
-    val s3: TranslationService = s1
-    val s4: Showable = s1
+   */
+  val s2: GreetingService = s1
+  // above statement does not copy the object. It only says: “treat this value as a GreetingService.”
+  // The compiler checks that MyService is a subtype of GreetingService (it is), so the assignment is allowed.
+  val s3: TranslationService = s1
+  val s4: Showable = s1
 
-/*******************************************************************
- Instances and Private Mutable State
-******************************************************************/
+/** ***************************************************************** Instances
+  * and Private Mutable State
+  */
 
-/* 
- Every instance of the class Counter has its own private state that can only be observed through the method count, 
+/*
+ Every instance of the class Counter has its own private state that can only be observed through the method count,
  as the following interaction illustrates:
 
     val c1 = Counter()
@@ -210,17 +209,14 @@ def classExample() =
 
 By default, all member definitions in Scala are publicly visible. To hide implementation details, it’s possible to
 define members (methods, fields, types, etc.) to be `private` or `protected`. This way you can control how they are
-accessed or overridden. 
-- Private members are only visible to the `class/trait` itself and to its `companion` object. 
+accessed or overridden.
+- Private members are only visible to the `class/trait` itself and to its `companion` object.
 - Protected members are also visible to subclasses of the class.
-*/
+ */
 
 class Counter:
-    // can only be observed by the method `count`
-    private var currentCount = 0
+  // can only be observed by the method `count`
+  private var currentCount = 0
 
-    def tick(): Unit = currentCount += 1
-    def count: Int = currentCount
-
-
-
+  def tick(): Unit = currentCount += 1
+  def count: Int = currentCount

@@ -15,25 +15,25 @@ This implementation of a Stack class takes any type as a parameter.
 The beauty of generics is that you can now create a Stack[Int],
 Stack[String], and so on, allowing you to reuse your implementation
 of a Stack for arbitrary element types.
-*/
+ */
 
 class Stack[A]:
 
-    private var elements: List[A] = Nil
+  private var elements: List[A] = Nil
 
-    def push(x: A): Unit =
-        elements = elements.prepended(x)
+  def push(x: A): Unit =
+    elements = elements.prepended(x)
 
-    def peek: A = elements.head
+  def peek: A = elements.head
 
-    def pop(): A =
-        val currentTop = peek
-        elements = elements.tail
-        currentTop
+  def pop(): A =
+    val currentTop = peek
+    elements = elements.tail
+    currentTop
 
 def genericsExample() =
-    val stack = Stack[Int]
-    stack.push(1)
-    stack.push(5)
-    println(s"popped element ${stack.pop()} from stack") // 5
-    println(s"popped element ${stack.pop()} from stack") // 1
+  val stack = Stack[Int]
+  stack.push(1)
+  stack.push(5)
+  println(s"popped element ${stack.pop()} from stack") // 5
+  println(s"popped element ${stack.pop()} from stack") // 1

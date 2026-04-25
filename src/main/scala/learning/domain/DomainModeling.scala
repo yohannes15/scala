@@ -151,12 +151,12 @@ enum Planet(val mass: Double, val radius: Double):
     otherMass * surfaceGravity
 
   case Mercury extends Planet(3.303e+23, 2.4397e6)
-  case Venus   extends Planet(4.869e+24, 6.0518e6)
-  case Earth   extends Planet(5.976e+24, 6.37814e6)
+  case Venus extends Planet(4.869e+24, 6.0518e6)
+  case Earth extends Planet(5.976e+24, 6.37814e6)
 
-// enums also allow companion object 
+// enums also allow companion object
 object Planet:
-  def main(args: Array[String]) = 
+  def main(args: Array[String]) =
     val earthWeight = args(0).toDouble
     val mass = earthWeight / Earth.surfaceGravity
     for p <- values do println(s"Your weight on $p is ${p.surfaceWeight(mass)}")
@@ -175,7 +175,7 @@ def enumExample() =
   println(Mercury.surfaceGravity)
   println(Earth.surfaceGravity)
   println(Color.Red.compareTo(Color.Green))
-  Planet.main(args=Array("1000"))
+  Planet.main(args = Array("1000"))
 
 ///////////////////////////////////////////////
 //////// CASE CLASSES /////////////////////////

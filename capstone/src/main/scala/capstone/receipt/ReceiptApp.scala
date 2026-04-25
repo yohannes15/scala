@@ -16,50 +16,48 @@ enum TaxCode(val rate: BigDecimal):
   case REDUCED extends TaxCode(BigDecimal("0.05"))
 
 case class Summary(
-  ok: Int = 0,
-  bad: Int = 0,
-  subtotals: Map[TaxCode, BigDecimal] =
-    TaxCode.values.
-    map(tc => tc -> BigDecimal("0.0")).toMap,
+    ok: Int = 0,
+    bad: Int = 0,
+    subtotals: Map[TaxCode, BigDecimal] =
+      TaxCode.values.map(tc => tc -> BigDecimal("0.0")).toMap
 ):
   def totalTax: BigDecimal =
-    subtotals.foldLeft(BigDecimal("0.0")){
-      case (acc, (tc, price)) => acc + (tc.rate * price)
-    }.setScale(2, RoundingMode.HALF_UP)
+    subtotals
+      .foldLeft(BigDecimal("0.0")) { case (acc, (tc, price)) =>
+        acc + (tc.rate * price)
+      }
+      .setScale(2, RoundingMode.HALF_UP)
 
   def grandTotal: BigDecimal =
     (
       subtotals.values
-      .foldLeft(BigDecimal("0.0"))((acc, price) => acc + price) 
-      + this.totalTax
+        .foldLeft(BigDecimal("0.0"))((acc, price) => acc + price)
+        + this.totalTax
     ).setScale(2, RoundingMode.HALF_UP)
 
   override def toString: String =
     "==================== Summary ==================\n" +
-    (
-      // Line summary
-      Seq(
-        ("Valid lines", ok.toString),
-        ("Invalid lines", bad.toString),
-      ) ++
-      // Subtotal price summary
-      TaxCode.values.toSeq
-      .map(
-        tc => (s"Subtotal $tc", subtotals(tc).toString)
-      ) ++
-      // Totals summary
-      Seq(
-        ("Total tax", totalTax.toString),
-        ("Grand total", grandTotal.toString),
+      (
+        // Line summary
+        Seq(
+          ("Valid lines", ok.toString),
+          ("Invalid lines", bad.toString)
+        ) ++
+          // Subtotal price summary
+          TaxCode.values.toSeq
+            .map(tc => (s"Subtotal $tc", subtotals(tc).toString)) ++
+          // Totals summary
+          Seq(
+            ("Total tax", totalTax.toString),
+            ("Grand total", grandTotal.toString)
+          )
       )
-    )
-    // Pad to a general large value (good enough)
-    .map((label, value) =>s"${label.padTo(25, ' ')}  ->  $value")
-    .mkString("\n")
-
+        // Pad to a general large value (good enough)
+        .map((label, value) => s"${label.padTo(25, ' ')}  ->  $value")
+        .mkString("\n")
 
 case class Receipt(description: String, taxCode: TaxCode, price: BigDecimal):
-  def tax: BigDecimal = 
+  def tax: BigDecimal =
     price * taxCode.rate
 
 /** Capstone 1 — boss project (see `capstone/README.md` — Boss project).
@@ -73,7 +71,7 @@ case class Receipt(description: String, taxCode: TaxCode, price: BigDecimal):
   getFileStream(textFile) match
     case Left(err) => println(s"error: $err.msg")
     // Generator is lazy: effects (println) only run when the stream is traversed — use foreach, not map alone.
-    case Right(g) => 
+    case Right(g) =>
       println(parseReceipt(g))
 
 def parseReceipt(stream: Generator[String]): Summary =
@@ -82,7 +80,9 @@ def parseReceipt(stream: Generator[String]): Summary =
       case Right(receipt) =>
         acc.copy(
           ok = acc.ok + 1,
-          subtotals = acc.subtotals + (receipt.taxCode -> (acc.subtotals(receipt.taxCode) + receipt.price)),
+          subtotals = acc.subtotals + (receipt.taxCode -> (acc.subtotals(
+            receipt.taxCode
+          ) + receipt.price))
         )
       case Left(err) =>
         println(err.msg.toString)
@@ -99,15 +99,13 @@ def parseLine(line: String, line_no: Int): Either[LineError, Receipt] =
       )
     )
   else
-    val parsings = 
+    val parsings =
       for
         description <- parseDescription(lineTokens(0))
         taxCode <- parseTaxCode(lineTokens(1))
         price <- parsePrice(lineTokens(2))
       yield Receipt(description, taxCode, price)
-    parsings.left.map(
-      e => LineError(s"Line: $line_no: ${e.msg}")
-    )
+    parsings.left.map(e => LineError(s"Line: $line_no: ${e.msg}"))
 
 def parseTaxCode(taxCode: String): Either[LineError, TaxCode] =
   TaxCode.values
@@ -116,18 +114,17 @@ def parseTaxCode(taxCode: String): Either[LineError, TaxCode] =
 
 def parseDescription(description: String): Either[LineError, String] =
   val desc = description.trim
-  if desc.isBlank then
-    Left(LineError("description can't be blank"))
+  if desc.isBlank then Left(LineError("description can't be blank"))
   else if desc.length > 40 then
     Left(LineError("description can't be more than 40 characters"))
   else Right(desc)
 
 def parsePrice(price: String): Either[LineError, BigDecimal] =
   Try { BigDecimal(price.trim()) } match
-    case Success(value) => 
+    case Success(value) =>
       if value < 0 then Left(LineError(s"Price needs to be >= 0. Got $value"))
       else Right(value.setScale(2, RoundingMode.HALF_UP))
-    case Failure(exception) => 
+    case Failure(exception) =>
       Left(LineError(s"Unable to parse price. Got: `$price`"))
 
 def getFileStream(textFile: String): Either[FileError, Generator[String]] =

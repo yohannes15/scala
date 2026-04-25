@@ -1,14 +1,15 @@
 package capstone.mini
 
-/** Capstone 1 — **credit band** CLI: parse **credit score** + **income**, validate, then
-  *  **`Approved`** or **`Declined`** with reasons (thresholds on score and income — see
-  *  [[CreditInfo]]). [[InvalidInput]] / [[Either]] for bad input; full write-up in repo
-  *  `capstone/README.md`.
+/** Capstone 1 — **credit band** CLI: parse **credit score** + **income**,
+  * validate, then **`Approved`** or **`Declined`** with reasons (thresholds on
+  * score and income — see [[CreditInfo]]). [[InvalidInput]] / [[Either]] for
+  * bad input; full write-up in repo `capstone/README.md`.
   *
-  *  Run from the **repo root** (`capstone` subproject):
+  * Run from the **repo root** (`capstone` subproject):
   *
-  *    - Interactive: `sbt "capstone/runMain capstone.mini.MiniCli"`
-  *    - One string arg: `sbt 'capstone/runMain capstone.mini.MiniCli "500 10000"'`
+  *   - Interactive: `sbt "capstone/runMain capstone.mini.MiniCli"`
+  *   - One string arg:
+  *     `sbt 'capstone/runMain capstone.mini.MiniCli "500 10000"'`
   */
 sealed trait AppError
 case class InvalidInput(msg: String) extends AppError
@@ -28,6 +29,7 @@ case class Declined(name: String = "Declined", reason: String = "NA")
 object CreditInfo:
   final val CREDIT_MIN_THRESHOLD = 450
   final val INCOME_MIN_THRESHOLD = 7500
+
   /** Smart constructor. Inside the companion, `CreditInfo(cs, in)` would call
     * *this* `apply` again (recursive `Either`). After validation, build the
     * value with `new` so you get a plain [[CreditInfo]], not a nested `Either`.
@@ -57,10 +59,9 @@ object CreditInfo:
       Declined(reason = s"Income below threshold $INCOME_MIN_THRESHOLD")
     else Approved(reason = "Above threshold")
 
-
 @main def MiniCli(creditIncomeString: String = ""): Unit =
-  val line = 
-    if creditIncomeString.isEmpty then getInput() 
+  val line =
+    if creditIncomeString.isEmpty then getInput()
     else creditIncomeString.trim()
 
   val creditInfo = parseCreditInfo(line)
@@ -72,7 +73,7 @@ object CreditInfo:
       val decision = CreditInfo.makeDecision(ci)
       println(s"${decision.name}: ${decision.reason}")
 
-def getInput(): String = 
+def getInput(): String =
   println("Input your credit_score and income in $ (separated by space or ,)")
   scala.io.StdIn.readLine().trim
 

@@ -18,19 +18,19 @@ in each case the name of the method, without any object prefixes.
 - @main method can handle command line arguments, and those arguments can have different types
     `scala run mainMethods.scala -- 23 Lisa Peter`
 
-- @main method can have an arbitrary number of parameters. 
+- @main method can have an arbitrary number of parameters.
 
-- @main method’s parameter list can end in a repeated parameter like String* that takes 
+- @main method’s parameter list can end in a repeated parameter like String* that takes
     all remaining arguments given on the command line.
 
-- @main method's parameter types (Int, String ...) -> there must be a given instance of the 
-    scala.util.CommandLineParser.FromString type class that converts an argument 
+- @main method's parameter types (Int, String ...) -> there must be a given instance of the
+    scala.util.CommandLineParser.FromString type class that converts an argument
     String to the required parameter type.
 
 - @main methods are the recommended way to generate programs that can be invoked from the command line in Scala 3
 
 The program implemented from @main method checks that there are enough arguments on the command line
-to fill in all parameters, and that the argument strings can be converted to the required types. 
+to fill in all parameters, and that the argument strings can be converted to the required types.
 If a check fails, the program is terminated with an error message:
 
     $ scala run happyBirthday.scala -- 22
@@ -39,7 +39,6 @@ If a check fails, the program is terminated with an error message:
     $ scala run happyBirthday.scala -- sixty Fred
     Illegal command line: java.lang.NumberFormatException: For input string: "sixty"
  */
-
 
 @main
 def happyBirthday(age: Int, name: String, others: String*) =
@@ -59,29 +58,26 @@ def happyBirthday(age: Int, name: String, others: String*) =
 def testMainMethods() =
   happyBirthday(23, "List", "Peter")
 
-
-/************************************************************
- USER DEFINED TYPES AS PARAMETERS
- --------------------------------
- compiler looks for a given instance of the 
- scala.util.CommandLineParser.FromString 
- typeclass for the type of the argument.
- ************************************************************/
+/** ********************************************************** USER DEFINED
+  * TYPES AS PARAMETERS -------------------------------- compiler looks for a
+  * given instance of the scala.util.CommandLineParser.FromString typeclass for
+  * the type of the argument.
+  */
 
 given CommandLineParser.FromString[Color] with
-    def fromString(s: String): Color = 
-        // matches the string to an enum constant by name
-        Color.valueOf(s)
+  def fromString(s: String): Color =
+    // matches the string to an enum constant by name
+    Color.valueOf(s)
 
 @main def run(color: Color): Unit =
   println(s"The color is ${color.toString}")
 
-/* 
+/*
 
 The Scala compiler generates a program from an `@main` method `f` as follows:
 
     - It creates a `class` named f in the package where the @main method was found.
-    - The class has a static method main with the usual signature of a Java main method: 
+    - The class has a static method main with the usual signature of a Java main method:
         it takes an Array[String] as argument and returns Unit.
     - The generated main method calls method f with arguments converted using
       `scala.util.CommandLineParser` helpers, which use `FromString` type class instances
@@ -106,13 +102,12 @@ For instance, the happyBirthday method above generates additional code *roughly*
 
     The `main` body parses each CLI segment using `FromString` instances (see
     `scala.util.CommandLineParser`), not a single "FromString object".
-*/
+ */
 
-
-/* 
+/*
 NOTES
 
-If programs need to cross-build between Scala 2 and Scala 3, it’s recommended to use an 
+If programs need to cross-build between Scala 2 and Scala 3, it’s recommended to use an
 object with an explicit main method and a single Array[String] argument instead:
 
 
@@ -128,4 +123,3 @@ def main(args: Array[String]): Unit =
 `scala run happyBirthday.scala -- 23 Lisa Peter`
 // Happy 23rd Birthday, Lisa and Peter!
  */
-

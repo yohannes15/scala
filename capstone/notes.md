@@ -2,6 +2,8 @@
 
 Scratch notes while building **MiniCli** (credit band) and **ReceiptApp** (receipt lines + tax **`Summary`**): **`Either`**, regex `split`, empty-line edge case, **`foldLeft`** over a stream, **`Either.left.map`** for line-number prefixes. See **`capstone/README.md`** for the checklist and run commands.
 
+- Formatting note: first run `cs launch scalafmt -- --version` or `cs launch scalafmt -- --help` to install/download Scalafmt, then use `cs launch scalafmt -- .` to reformat the repo when `sbt scalafmtAll` isn't available.
+
 ## Input parsing
 
 ### Regex `[,\\s]+` (Scala string passed to `split`)
