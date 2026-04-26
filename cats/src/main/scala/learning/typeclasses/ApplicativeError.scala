@@ -8,6 +8,7 @@ import cats.data.Validated
   * `Either[E, A]`.
   */
 object LearningApplicativeError {
+  // ApplicativeError Trait
   trait ApplicativeError[F[_], E] extends Applicative[F] {
     def raiseError[A](e: E): F[A]
     def handleErrorWith[A](fa: F[A])(f: E => F[A]): F[A]
@@ -15,6 +16,37 @@ object LearningApplicativeError {
     def attempt[A](fa: F[A]): F[Either[E, A]]
     // more functions left out
   }
+
+  // Sample implementation of ApplicativeError for Either[String, A] type
+  type ErrorOr[A] = Either[String, A]
+
+  given applicativeErrorEither: ApplicativeError[ErrorOr, String] with
+
+    def pure[A](a: A): ErrorOr[A] = Right(a)
+
+    def ap[A, B](ff: ErrorOr[A => B])(fa: ErrorOr[A]): ErrorOr[B] =
+      (ff, fa) match
+        case (Right(f), Right(a)) => Right(f(a))
+        case (Left(e), _)         => Left(e)
+        case (_, Left(e))         => Left(e)
+
+    def raiseError[A](e: String): ErrorOr[A] = Left(e)
+
+    def handleErrorWith[A](fa: ErrorOr[A])(
+        f: String => ErrorOr[A]
+    ): ErrorOr[A] =
+      fa match
+        case Left(e)  => f(e)
+        case Right(a) => Right(a)
+
+    def handleError[A](fa: ErrorOr[A])(f: String => A): ErrorOr[A] =
+      fa match
+        case Left(e)  => Right(f(e))
+        case Right(a) => Right(a)
+
+    def attempt[A](fa: ErrorOr[A]): ErrorOr[Either[String, A]] =
+      Right(fa)
+
   /*
   
    **Use Case:
@@ -51,34 +83,5 @@ object LearningApplicativeError {
 
 @main def applicativeErrorExamples() =
   import LearningApplicativeError.*
-  // Sample implementation of ApplicativeError for ErrorOr[A] type
-  type ErrorOr[A] = Either[String, A]
-
-  given applicativeErrorEither: ApplicativeError[ErrorOr, String] with
-    def pure[A](a: A): ErrorOr[A] = Right(a)
-
-    def ap[A, B](ff: ErrorOr[A => B])(fa: ErrorOr[A]): ErrorOr[B] =
-      (ff, fa) match
-        case (Right(f), Right(a)) => Right(f(a))
-        case (Left(e), _)         => Left(e)
-        case (_, Left(e))         => Left(e)
-
-    def raiseError[A](e: String): ErrorOr[A] = Left(e)
-
-    def handleErrorWith[A](fa: ErrorOr[A])(
-        f: String => ErrorOr[A]
-    ): ErrorOr[A] =
-      fa match
-        case Left(e)  => f(e)
-        case Right(a) => Right(a)
-
-    def handleError[A](fa: ErrorOr[A])(f: String => A): ErrorOr[A] =
-      fa match
-        case Left(e)  => Right(f(e))
-        case Right(a) => Right(a)
-
-    def attempt[A](fa: ErrorOr[A]): ErrorOr[Either[String, A]] =
-      Right(fa)
-
   val g: ErrorOr[Int] = attemptDivideApplicativeError[ErrorOr](30, 10)
   println(s"ApplicativeError ErrorOr Result: $g")
