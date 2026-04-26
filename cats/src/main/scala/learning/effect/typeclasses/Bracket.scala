@@ -7,6 +7,22 @@ package learning.effect.typeclasses
   * Important note, throwing in `release` function is undefined since the
   * behaviour is left to the concrete implementations (ex cats-effect
   * Bracket[IO], Monix Bracket[Task] or ZIO)
+  *
+  * Mental model in cats-effect 2 vs 3, and why this file still matters — the
+  * *pattern* is unchanged (acquire, use, release, failures, and where supported
+  * cancellation).
+  *
+  * In cats-effect 3 the library exposes that under **`MonadCancel`** and
+  * `bracket` / `bracketCase` (etc.) on `F`, not a public type class literally
+  * called `Bracket` the way older docs did. You learn the shape here; in real
+  * code you use `MonadCancel` (often `MonadCancel[F, Throwable]` /
+  * `MonadCancelThrow` in signatures) and concrete `IO` / `Resource` rather than
+  * `import cats.effect.Bracket` on CE3.
+  *
+  * Pairs with `learning.effect.datatypes.Resource`: same discipline, but
+  * `Resource` is the composable data structure; `bracket` is the primitive
+  * guarantee underneath. Official CE3 `Resource` guide:
+  * https://typelevel.org/cats-effect/docs/std/resource
   */
 
 import cats.MonadError
