@@ -1,0 +1,2 @@
+Copy this data
+Demo: from repo root run `sbt copyFileDemo` (writes dest.txt next to this file).

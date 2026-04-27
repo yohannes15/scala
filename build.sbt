@@ -45,6 +45,11 @@ lazy val cats = (project in file("cats"))
     name := "learning-cats",
     // starts a separate JVM
     Compile / run / fork := true,
+    // Default fork cwd is this subproject (`cats/`). Paths like `cats/src/...` then become
+    // `cats/cats/...` and break. Use the build root (repo root / `/workspaces` in devcontainer).
+    Compile / run / forkOptions := ForkOptions()
+      .withRunJVMOptions((Compile / run / javaOptions).value.toVector)
+      .withWorkingDirectory(Some((ThisBuild / baseDirectory).value)),
     // Lets `Nested[Option, Validated[String, *], Int]` match the Cats Nested docs notation.
     scalacOptions ++= Seq(
       "-Xkind-projector",
@@ -68,3 +73,9 @@ lazy val cats = (project in file("cats"))
 // Theyre functionally equivalent for a single project — the bare style is just shorthand.
 // Under the hood, sbt treats bare settings as if they were inside a lazy val root = (project in file(".")).settings(...)
 // block. The multi-project style becomes necessary once you have more than one subproject.
+
+// Try `learning.effect.tutorials.CopyFile` with bundled tutorial files (paths from build root).
+addCommandAlias(
+  "copyFileDemo",
+  "cats/runMain learning.effect.tutorials.CopyFile cats/src/main/scala/learning/effect/tutorials/origin.txt cats/src/main/scala/learning/effect/tutorials/dest.txt"
+)
