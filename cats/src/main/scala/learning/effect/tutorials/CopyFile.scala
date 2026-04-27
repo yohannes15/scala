@@ -39,7 +39,7 @@ import cats.effect.ExitCode
   * When coding IOApp, instead of a main function we have a run function, which
   * creates the IO instance that forms the program. In our case, our run method
   * can look like this:
-  * 
+  *
   * {{{
   *    sbt 'cats/runMain learning.effect.tutorials.CopyFile cats/src/main/scala/learning/effect/tutorials/origin.txt
   *    cats/src/main/scala/learning/effect/tutorials/dest.txt'
@@ -231,4 +231,13 @@ object CopyFile extends IOApp:
     * only between two calls to IO.blocking. If we want the execution of an IO
     * instance to be interrupted when canceled, without waiting for it to
     * finish, we must instantiate it using `IO.interruptible`!
+    *
+    * It can be argued that using IO(java.nio.file.Files.copy(...)) would get an
+    * IO with the same characterstics of purity as our function, but there is a
+    * difference in that our IO is safely cancelable. So the user can stop the
+    * running code at any time and our code will deal with safe resource release
+    * (streams closing) even under circumstances (like Ctrl-c). The same will
+    * apply if the copy function is run from other modules that require its
+    * functionality. If the IO returned by this function is cancelled while
+    * being run, resources will be properly released
     */
