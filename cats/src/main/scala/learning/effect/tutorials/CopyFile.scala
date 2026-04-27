@@ -4,7 +4,7 @@ import java.io.{
   File, FileInputStream, FileOutputStream, InputStream, OutputStream
 }
 import cats.syntax.all.*
-import cats.effect.{IO, Resource}
+import cats.effect.{IO, Resource, Sync}
 import cats.effect.IOApp
 import cats.effect.ExitCode
 
@@ -56,7 +56,7 @@ object CopyFile extends IOApp:
       )(new IllegalArgumentException("Need origin and destination files"))
       orig = new File(args(0))
       dest = new File(args(1))
-      count <- copy(orig, dest)
+      count <- copyPoly[IO](orig, dest)
       _ <- IO.println(
         s"$count bytes copied from ${orig.getPath} to ${dest.getPath}"
       )
@@ -124,7 +124,8 @@ object CopyFile extends IOApp:
   def copy(origin: File, destination: File): IO[Long] =
     val streamResources = inputOutputStreams(origin, destination)
     streamResources.use {
-      case (in, out) => transfer(in, out, new Array[Byte](1024 * 10), 0)
+      // We can use transferPoly or transfer (showcasing using IO vs Sync/Async)
+      case (in, out) => transferPoly(in, out, new Array[Byte](1024 * 10), 0)
     }
 
   /** If you are familiar with cats-effect's `bracket` you may wonder why we use
@@ -239,5 +240,94 @@ object CopyFile extends IOApp:
     * (streams closing) even under circumstances (like Ctrl-c). The same will
     * apply if the copy function is run from other modules that require its
     * functionality. If the IO returned by this function is cancelled while
-    * being run, resources will be properly released
+    * being run, resources will be properly released.
+    *
+    * Polymorphic cats-effect code & Sync/Async
+    * ------------------------------------------------------------------------
+    * There is an important characterstic of IO that we should be aware of. IO
+    * is able to suspend side-effects async thanks to the existence of an
+    * instance of Async[IO]. Because Async extends Sync, IO can also suspend
+    * side-effects synchronously. On top of that Async extends typeclasses such
+    * as MonadCancel, Concurrent or Temporal, which bring the possibility to
+    * cancel an IO instance, to run serveral IO instances concurrently, to
+    * timeout an execution, to force the execution to wait (sleep), etc ...
+    *
+    * Could we have coded our copy file functions in terms of some F[_]: Sync
+    * and F[_]: Async instead of IO? Yes! below is an example of how we would
+    * define a polymorphic version of our transfer function with this apporach,
+    * just by replacing any use of IO by calls to the delay and pure methods the
+    * Sync[F] functions.
+    *
+    * Only in our main function we could set IO as the final F for our program.
+    * To do so, of course, a Sync[IO] instance must be in scope, but that
+    * instance is brought transparently by IOApp, so we don't need to be
+    * concerned about it (falling to IO only in the run method is common).
+    * Polymorphic code is less restrictive, as functions are not tied to IO but
+    * are applicable to any F[] as long as there is an instance of the type
+    * class required (Sync, Async ...) in scope. The type class to use depends
+    * on requirements of the code
     */
+  def transferPoly[F[_]: Sync](
+      origin: InputStream,
+      destination: OutputStream,
+      buffer: Array[Byte],
+      acc: Long
+  ): F[Long] =
+    for
+      amount <- Sync[F].blocking(origin.read(buffer, 0, buffer.length))
+      count <-
+        (
+          if (amount > -1) then
+            Sync[F].blocking(destination.write(buffer, 0, amount)) >>
+              transferPoly(origin, destination, buffer, acc + amount)
+          // end of stream reached
+          else Sync[F].pure(acc)
+        )
+    yield count
+
+  // Implementing the polymorphic versions of copy functions below
+  def inputStreamPoly[F[_]: Sync](f: File): Resource[F, FileInputStream] =
+    Resource.make(Sync[F].blocking(new FileInputStream(f))) {
+      inStream =>
+        Sync[F].blocking(inStream.close()).handleErrorWith(_ => Sync[F].unit)
+    }
+  def outputStreamPoly[F[_]: Sync](f: File): Resource[F, FileOutputStream] =
+    Resource.make(Sync[F].blocking(new FileOutputStream(f))) {
+      outStream =>
+        Sync[F].blocking(outStream.close()).handleErrorWith(_ => Sync[F].unit)
+    }
+  def inputOutputStreamsPoly[F[_]: Sync](
+      in: File,
+      out: File
+  ): Resource[F, (InputStream, OutputStream)] =
+    for
+      inStream <- inputStreamPoly(in)
+      outStream <- outputStreamPoly(out)
+    yield (inStream, outStream)
+
+  def copyPoly[F[_]: Sync](origin: File, destination: File): F[Long] =
+    inputOutputStreamsPoly(origin, destination).use {
+      case (in, out) => transferPoly(in, out, new Array[Byte](1024 * 10), 0L)
+    }
+
+/** TODO: Exercises: improving our small IO program
+  *
+  * To finalize we propose you some exercises that will help you to keep
+  * improving your IO-kungfu:
+  *
+  *   1. Modify the IOApp so it shows an error and abort the execution if the
+  *      origin and destination files are the same, the origin file cannot be
+  *      open for reading, or the destination file cannot be opened for writing.
+  *      Also, if the destination file already exists, the program should ask
+  *      for confirmation before overwriting that file.
+  *   2. Test safe cancelation, checking that the streams are indeed being
+  *      properly closed. You can do that just by interrupting the program
+  *      execution pressing Ctrl-c. To make sure you have the time to interrupt
+  *      the program, introduce a delay of a few seconds in the transfer
+  *      function (see IO.sleep). And to ensure that the release functionality
+  *      in the Resources is run you can add some log message there (see
+  *      IO.println).
+  *   3. Create a new program able to copy folders. If the origin folder has
+  *      subfolders, then their contents must be recursively copied too. Of
+  *      course the copying must be safely cancelable at any moment.
+  */
