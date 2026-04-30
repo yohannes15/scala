@@ -2,6 +2,8 @@ import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*
 import scala.collection.immutable.Queue
+import scala.concurrent.duration.DurationInt
+import cats.effect.std.AtomicCell
 
 /** Producer-Consumer (Concurrency and Fibers):
   *
@@ -171,4 +173,98 @@ object InefficientProducerConsumer extends IOApp:
   * is way faster running its `queueR.getAndUpdate` call than the consumer is
   * running its `queueR.modify` call. So the consumer gets 'stuck' trying once
   * and again to update the `queueR` content.
+  *
+  * By the way, you may be tempted to speed up the `queueR.modify` call in the
+  * consumer by using a mutable `Queue` instance. Do not! as `Ref` must be used
+  * with immutable data only!
+  *
+  * Potential Solutions
+  *
+  * A) Make the producer artifically slower -> by introducing a call to
+  * `Async[F].sleep` (e.g. for 1 microsecond). In a real world example, a
+  * producer will not be as fast as our example btw. Note that to be able to use
+  * `sleep` now `F` requires an implicit `Async[F]` instance.
+  *
+  * B) Replace `Ref` with `AtomicCell` to keep the `Queue` instance.
+  * `AtomicCell` like `Ref` is a concurrent data structure to keep a reference
+  * to some data. But unlike `Ref`, it ensures that only 1 fiber can operate on
+  * that reference at any given time. Thus the consumer won't have to try once
+  * and again to modify its content. `AtomicCell` is slower than `Ref`, as it
+  * blocks calling fibes to ensure only one operates on its content. `Ref` is
+  * nonblocking for fibers.
+  *
+  * C) Make the queue bound by size so producers are forced to wait for
+  * consumers to extract data when the queue is full. This bounded example will
+  * be shown at end
+  *
+  * Issue 2: Consumer runs even if there are no elements in the queue
+  *
+  * The consumer will be continually running regardless if there are elements in
+  * the queue, which is far from ideal. If we have several consumers competing
+  * for the data the problem gets even worse.
+  *
+  * Potential Solutions
+  *
+  * A) Using `Deferred` (we will see this at the end as well)
+  */
+object InefficientAtomicSleepProducerConsumer extends IOApp:
+
+  def producer[F[_]: Async: Console](
+      queueR: AtomicCell[F, Queue[Int]],
+      counter: Int
+  ): F[Unit] =
+    for
+      _ <- Async[F].whenA(counter % 10000 == 0)(
+        Console[F].println(s"Produced $counter items")
+      )
+      _ <- Async[F].sleep(1.microsecond) // To prevent overwhelming consumers
+      _ <- queueR.getAndUpdate(_.enqueue(counter + 1))
+      _ <- producer(queueR, counter + 1)
+    yield ()
+
+  def consumer[F[_]: Sync: Console](queueR: AtomicCell[F, Queue[Int]])
+      : F[Unit] =
+    for
+      iO <- queueR.modify { queue =>
+        queue.dequeueOption.fold((queue, Option.empty[Int])) {
+          case (i, queue) => (queue, Option(i))
+        }
+      }
+      _ <- Sync[F].whenA(
+        iO.exists(_ % 10000 == 0)
+      )(Console[F].println(s"Consumed ${iO.get} items"))
+      _ <- consumer(queueR)
+    yield ()
+
+  override def run(args: List[String]): IO[ExitCode] =
+    for
+      queueR <- AtomicCell[IO].of(Queue.empty[Int])
+      res <- (consumer(queueR), producer(queueR, 0))
+        .parMapN((_, _) =>
+          ExitCode.Success
+        ) // Run producer and consumer in parallel until done (likely by user cancelling with CTRL-C)
+        .handleErrorWith { t =>
+          Console[IO].errorln(
+            s"Error caught: ${t.getMessage}"
+          ).as(ExitCode.Error)
+        }
+    yield res
+
+/** A more solid implementation of the producer/consumer pattern
+  * -------------------------------------------------------------
+  *
+  * Instead of using `Option` to represent elements retrieved from a possibly
+  * empty queue, we should instead block the caller fiber somehow if queue is
+  * empty until some element can be returned. This prevents having consumer
+  * fibers running when there is no element to consume. This is done by creating
+  * and keeping instances of `Deferred`.
+  *
+  * A `Deferred[F, A]` instance can hold one single element of some type `A`.
+  * Deferred instances are created empty, and can be filled only once. If some
+  * fiber tries to read the element from an empty `Deferred` then it will wait
+  * until some other fiber fills (completes) it. But recall this waiting doesn't
+  * block any physical thread. THE BEAUTY OF FIBERS!
+  *
+  * Also we will improve our code to handle several producers/consumers in
+  * parallel.
   */
